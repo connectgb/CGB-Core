@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const mongodbDatabase = 'ConnectGames';
 const dbPass = process.env.DB_PASSWORD; // u25!7KQ6be@D
-const connectionUri = `mongodb+srv://discordMiniAdmin:${dbPass}@discordmini-36r5p.gcp.mongodb.net/${mongodbDatabase}?retryWrites=true`;
+const connectionUri = `mongodb+srv://discorMiniAdmin:${dbPass}@discordmini-36r5p.gcp.mongodb.net/${mongodbDatabase}?retryWrites=true`;
 console.log(connectionUri);
 export class Database {
   constructor() {
