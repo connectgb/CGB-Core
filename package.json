@@ -4,8 +4,7 @@
 	"description": "",
 	"main": "src/index.js",
 	"scripts": {
-		"start": "",
-		"dev": "nodemon --watch 'src/**/*.ts' --ignore 'src/**/*.spec.ts' --exec 'ts-node' src/index.ts",
+		"start": "nodemon --watch 'src/**/*.ts' --ignore 'src/**/*.spec.ts' --exec 'ts-node' src/index.ts",
 		"build": "tsc -p ."
 	},
 	"dependencies": {
