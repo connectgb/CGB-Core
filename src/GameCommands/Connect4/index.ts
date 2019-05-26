@@ -10,6 +10,7 @@ export default class Connect4 extends OnlineGames {
     imageUrl:
       'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5R4_FiAZMoc0RAFLMSLPt7_IocF6WC0SM7t7yWaxGDyAhY7x5mg',
   };
+
   constructor(
     client: Discord.Client,
     message: Discord.Message,
