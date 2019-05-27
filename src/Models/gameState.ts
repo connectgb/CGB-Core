@@ -10,7 +10,7 @@ export interface IGameMetaInfo {
 export interface IGameMetaData {
   guildID: string;
   gameID: string;
-  status: 'REJ' | 'ACP';
+  status: 'REJECTED' | 'ACCEPTED';
   accepted: boolean;
   players: Array<Discord.User>;
   playerIDs: Array<String>;

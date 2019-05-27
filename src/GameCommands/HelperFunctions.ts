@@ -73,7 +73,8 @@ export async function getMentionedPlayers(msg: Discord.Message) {
   if (msg.author.id in playersinfo.ids) {
     await msg.reply('Cannot Tag Yourself!');
     return;
+  } else {
+    // console.log(playersinfo.ids);
+    return playersinfo;
   }
-  // console.log(playersinfo.ids);
-  return playersinfo;
 }

@@ -31,8 +31,8 @@ export class OnlineGames {
 
   // Confirmation Stage Both players Must Accept for the game to be registered
   async GameConfirmationStage(metaConfig: IGameMetaInfo) {
-    const acceptEmoji = '🔵'; //'🔵'; '✔️';
-    const rejectEmoji = '🔴'; //'🔴'; '❌';
+    const acceptEmoji = `🔵`; //'🔵'; '✔️'; ':heavy_check_mark:️'
+    const rejectEmoji = `🔴`; //'🔴'; '❌';':x:'
 
     this.gameMetaData = {
       guildID: this.msg.guild.id,
@@ -44,9 +44,10 @@ export class OnlineGames {
       channelID: this.msg.channel.id,
       metaInfo: metaConfig,
     };
-    let currentStatusMSG = new Discord.RichEmbed()
-      .setTitle(`Playing ${metaConfig.title}`)
-      .addField('GameID', this.gameMetaData.gameID);
+    let currentStatusMSG = new Discord.RichEmbed().setTitle(
+      `Playing ${metaConfig.title}`
+    );
+    // .addField('GameID', this.gameMetaData.gameID);
 
     // the message which the players have to accept
     const ConfirmationMSG = new Discord.RichEmbed()
@@ -63,11 +64,16 @@ export class OnlineGames {
     // more than 1
     // write a function that will support more than 1 players games
     if (metaConfig.numPlayers > 1) {
-      const e = await getMentionedPlayers(this.msg);
-      // console.log(e);
-      const { players, ids } = e;
-      this.gameMetaData.playerIDs = this.gameMetaData.playerIDs.concat(ids);
-      this.gameMetaData.players = this.gameMetaData.players.concat(players);
+      try {
+        const e = await getMentionedPlayers(this.msg);
+        // console.log(e);
+        const { players, ids } = e;
+        this.gameMetaData.playerIDs = this.gameMetaData.playerIDs.concat(ids);
+        this.gameMetaData.players = this.gameMetaData.players.concat(players);
+      } catch (e) {
+        console.log(e);
+        return;
+      }
     }
     // checks if the number of players match!
     if (
@@ -82,7 +88,9 @@ export class OnlineGames {
     // custume 2 player games
     if (this.gameMetaData.players.length == 2)
       ConfirmationMSG.setAuthor(
-        `${this.hUser.user.username} ---VS--- ${this.gameMetaData.players[1]}`
+        `${this.hUser.user.username} ---VS--- ${
+          this.gameMetaData.players[1].username
+        }`
       )
         .addField('Challenger: ', this.hUser)
         .addField('Challenge: ', this.gameMetaData.players[1]);
@@ -103,47 +111,62 @@ export class OnlineGames {
     // listens for all players decision to play or not
     await ConfirmationMSGSent.awaitReactions(
       //filter function. only players taking part in the game and one the accept and reject emojies are being captured
-      (reaction, user: Discord.GuildMember) => {
-        return (
-          user.id in this.gameMetaData.playerIDs &&
-          (reaction.emoji.name === acceptEmoji ||
-            reaction.emoji.name === rejectEmoji)
-        );
+      (reaction: Discord.MessageReaction, user: Discord.GuildMember) => {
+        // Discord.ReactionEmoji
+        for (let playerAllowedID in this.gameMetaData.playerIDs) {
+          // FINALLY GOT IT !
+          // console.log(user.id);
+          // console.log(this.gameMetaData.playerIDs[playerAllowedID]);
+          // console.log(
+          //   user.id === this.gameMetaData.playerIDs[playerAllowedID] &&
+          //     (reaction.emoji.name === acceptEmoji ||
+          //       reaction.emoji.name === rejectEmoji)
+          // );
+          if (
+            user.id === this.gameMetaData.playerIDs[playerAllowedID] &&
+            (reaction.emoji.name === acceptEmoji ||
+              reaction.emoji.name === rejectEmoji)
+          )
+            return true;
+        }
+        return false;
       },
       { time: 6000 } // waits for 6ms => 6 seconds
     )
       .then(reactionResults => {
-        currentStatusMSG.addField('Status', this.gameMetaData.status);
+        // console.log(reactionResults.get(acceptEmoji));
         if (
-          // reactionResults.get(acceptEmoji) &&
-          reactionResults.get(acceptEmoji).count - 1 !==
-          metaConfig.numPlayers
+          reactionResults.get(acceptEmoji) == null ||
+          reactionResults.get(acceptEmoji).count - 1 != metaConfig.numPlayers
         ) {
           // not everyone is ready *minus one for the bot
-          this.gameMetaData.status = 'REJ';
+          this.gameMetaData.status = 'REJECTED';
           currentStatusMSG
             .setDescription('Not Every One Was Ready!')
-            .setColor('#003366');
+            .setColor('#003366')
+            .addField('Status', this.gameMetaData.status);
 
           if (
             reactionResults.get(rejectEmoji) &&
             reactionResults.get(rejectEmoji).count - 1 > 0
           ) {
+            // console.log(reactionResults.get(rejectEmoji).count);
             // some players rejected the game
-            this.gameMetaData.status = 'REJ';
             currentStatusMSG
               .setDescription('Someone Rejected!')
               .setColor('#F44336');
           }
         } else {
           // everyone is ready! let the game begin
-          this.gameMetaData.status = 'ACP';
+          this.gameMetaData.status = 'ACCEPTED';
           this.gameMetaData.gameID = `${uuidv4()}`;
           this.gameMetaData.accepted = true;
           console.log(`Starting New Game: ${this.gameMetaData.gameID}`);
           currentStatusMSG
             .setDescription('Connection Made')
             .setColor('#2ECC40')
+            .addField('Status', this.gameMetaData.status)
+            .addField('GameID', this.gameMetaData.gameID)
             .setFooter('Setting up Game Game...');
         }
         return currentStatusMSG; // not needed but oh-well
