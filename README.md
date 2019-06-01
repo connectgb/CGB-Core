@@ -6,7 +6,6 @@ Join the discord to get a feel for the bot in action!
 If you want the bot on your server go [HERE](). You will need to varify your server later on with an Api key which you can get on the website
 
 ---
-
 ## Trello Board
 
 Link to the Trello board [click](https://trello.com/b/8F6OHh45/connect-4-discord-bot).
@@ -21,21 +20,20 @@ Feel free to add things into the ideas post.
 ## Help Functions
 
 1. [LeaveGame](#LeaveGame)
-
 ---
 
 ## Online Games Setup
 
-#### Confirmation Stage:
 
-- Sends out a message to the channel which the initial game invite was sent.
-- Both players must Accept by reacting with the accept emojie for the game to be registered.
+   #### Confirmation Stage:
+   - Sends out a message to the channel which the initial game invite was sent.
+   - Both players must Accept by reacting with the accept emojie for the game to be registered.
+   
+   #### validation:
+   - Checks if the player is part of the database
+   - Whether or not the other players are in a game.
+   - Checks if the number of players needed for the game to start is met.
 
-#### validation:
-
-- Checks if the player is part of the database
-- Whether or not the other players are in a game.
-- Checks if the number of players needed for the game to start is met.
 
 ---
 
@@ -51,7 +49,6 @@ The bot will respond with [intial Game setup](#Online-Games-Setup)
 ---
 
 ## LeaveGame
-
 This function will force leave the current game that you are in.
 
 #### usage: ~!leaveGame
