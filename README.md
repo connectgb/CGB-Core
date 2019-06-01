@@ -20,6 +20,15 @@ Feel free to add things into the ideas post.
 
 ## Online Games Setup
 
+   #### Confirmation Stage:
+   - Sends out a message to the channel which the initial game invite was sent.
+   - Both players must Accept by reacting with the accept emojie for the game to be registered.
+   
+   #### validation:
+   - Checks if the player is part of the database
+   - Whether or not the other players are in a game.
+   - Checks if the number of players needed for the game to start is met.
+
 ---
 
 ## Connect4
