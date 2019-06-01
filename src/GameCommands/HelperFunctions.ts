@@ -36,8 +36,6 @@ export async function getMentionedPlayers(msg: Discord.Message) {
   // msg.mentions.users.forEach(async function(user) {
   for (let i = 0; i < msg.mentions.users.size; i++) {
     let user = usersIter.next();
-
-    console.log(user.value);
     // @ts-ignore
     const userData: IUserState = await UserMD.byUserIDnGuildID(
       `${user.value.id}`,
@@ -63,7 +61,6 @@ export async function getMentionedPlayers(msg: Discord.Message) {
   // console.log(playersinfo.ids);
   // console.log('reached here');
   if (playersinfo.ids && playersinfo.ids.length === 0) {
-
     // checks if player 2 is mentioned
     await msg.reply('Tag another user use: <@user>');
     return;

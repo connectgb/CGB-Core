@@ -36,7 +36,7 @@ const GameSchema = new Schema({
 
 export interface IGameMetaInfo {
   title: string;
-  numPlayers?: number;
+  numPlayers: number;
   imageUrl: string;
   description?: string;
 }

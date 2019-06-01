@@ -9,32 +9,30 @@ import { UserMD, IUserState } from '../Models/userState';
 import { IGameMetaData, IGameMetaInfo, GameMD } from '../Models/gameState';
 import mongoose from 'mongoose';
 
-export class OnlineGames {
+//@ts-ignore
+export abstract class OnlineGames {
   botClient: Discord.Client;
   msg: Discord.Message;
   args: Array<string>;
   hUser: Discord.GuildMember;
-  // cPlayers: Array<Discord.GuildMember>;
+  metaConfig: IGameMetaInfo;
   gameMetaData: IGameMetaData;
   GameData: any;
+
   constructor(
     client: Discord.Client,
     message: Discord.Message,
-    cmdArguments: Array<string>,
-    InitialGameData?: any
-
-    // DB_CONNECTION: typeof mongoose
+    cmdArguments: Array<string>
   ) {
     // init variables
     this.botClient = client;
     this.msg = message;
     this.args = cmdArguments;
     this.hUser = message.guild.member(message.author);
-    this.GameData = InitialGameData;
   }
 
   // Confirmation Stage Both players Must Accept for the game to be registered
-  async GameConfirmationStage(metaConfig: IGameMetaInfo) {
+  async GameConfirmationStage() {
     const acceptEmoji = `🔵`; //'🔵'; '✔️'; ':heavy_check_mark:️'
     const rejectEmoji = `🔴`; //'🔴'; '❌';':x:'
 
@@ -46,28 +44,30 @@ export class OnlineGames {
       playerIDs: [this.hUser.id],
       players: [this.hUser.user],
       channelID: this.msg.channel.id,
-      metaInfo: metaConfig,
+      metaInfo: this.metaConfig,
     };
     let currentStatusMSG = new Discord.RichEmbed().setTitle(
-      `Playing ${metaConfig.title}`
+      `Playing ${this.metaConfig.title}`
     );
     // .addField('GameID', this.gameMetaData.gameID);
 
     // the message which the players have to accept
     const ConfirmationMSG = new Discord.RichEmbed()
-      .setImage(metaConfig.imageUrl)
-      .setTitle(`Playing ${metaConfig.title}`)
-      .setDescription(metaConfig.description ? metaConfig.description : '')
+      .setImage(this.metaConfig.imageUrl)
+      .setTitle(`Playing ${this.metaConfig.title}`)
+      .setDescription(
+        this.metaConfig.description ? this.metaConfig.description : ''
+      )
       .setColor('#D3D3D3');
 
-    switch (metaConfig.numPlayers) {
+    switch (this.metaConfig.numPlayers) {
       case 1:
         ConfirmationMSG.addField('Player: ', this.hUser);
         break;
     }
     // more than 1
     // write a function that will support more than 1 players games
-    if (metaConfig.numPlayers > 1) {
+    if (this.metaConfig.numPlayers > 1) {
       const e = await getMentionedPlayers(this.msg);
       // console.log(e);
       if (e === undefined) return;
@@ -78,11 +78,12 @@ export class OnlineGames {
     console.log(this.gameMetaData.playerIDs);
     // checks if the number of players match!
     if (
-      this.gameMetaData.playerIDs.length !== metaConfig.numPlayers ||
+      this.gameMetaData.playerIDs.length !== this.metaConfig.numPlayers ||
       this.gameMetaData.playerIDs == null
     ) {
       await this.msg.reply(
-        `you need to mention ${metaConfig.numPlayers - 1} to players this game`
+        `you need to mention ${this.metaConfig.numPlayers -
+          1} to players this game`
       );
 
       return;
@@ -139,7 +140,8 @@ export class OnlineGames {
         // console.log(reactionResults.get(acceptEmoji));
         if (
           reactionResults.get(acceptEmoji) == null ||
-          reactionResults.get(acceptEmoji).count - 1 != metaConfig.numPlayers
+          reactionResults.get(acceptEmoji).count - 1 !=
+            this.metaConfig.numPlayers
         ) {
           // not everyone is ready *minus one for the bot
           this.gameMetaData.status = 'REJECTED';
@@ -204,12 +206,13 @@ export class OnlineGames {
 
       await this.msg.channel.send(succesfulInitializeMSG);
       await this.updatePlayersStatusJoinGame();
+      return true;
     } catch (e) {
       console.log(e);
       // Failed to save game data
       const failedInitializeMSG = new Discord.RichEmbed()
         .setTitle('Failed Initialization ')
-        .setDescription('Failed to initialize The game on our Servers')
+        .setDescription('Failed to initialize the game on our Servers')
         .addField('GameID', this.gameMetaData.gameID)
         .addField('Name', e.name ? e.name : '')
         .addField('Message', e.message ? e.message : '')
@@ -220,6 +223,7 @@ export class OnlineGames {
         .setColor('#F44336');
 
       await this.msg.channel.send(failedInitializeMSG);
+      return false;
     }
   }
   async updatePlayersStatusJoinGame() {
@@ -271,6 +275,31 @@ export class OnlineGames {
         console.log(e);
       });
   }
+
+  async cleanUpTheGameData() {
+    try {
+      //@ts-ignore
+      const GameDataDB = GameMD.byGameID();
+      await GameMD.deleteOne({ 'meta.gameID': this.gameMetaData.gameID });
+      this.gameMetaData.playerIDs.forEach(playerID => {
+        OnlineGames.updatePlayerStatusLeaveGame(
+          playerID as string,
+          this.gameMetaData.guildID
+        );
+      });
+
+      const gameClosedeMSG = new Discord.RichEmbed()
+        .setTitle('Games Close')
+        .setDescription('successfully closed the game on our servers')
+        .addField('GameID', this.gameMetaData.gameID)
+        .setColor('#2ECC40');
+
+      this.msg.channel.send(gameClosedeMSG);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   // means that this function needs to be created in each child
-  GameLifeCicle: Promise<void>;
+  abstract GameLifeCicle(): Promise<void>;
 }

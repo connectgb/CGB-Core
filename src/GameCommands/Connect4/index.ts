@@ -1,11 +1,7 @@
-
-
 import * as Discord from 'discord.js';
-import mongoose from 'mongoose';
 import { OnlineGames } from '../OnlineGame';
-import { IGameMetaInfo } from '../../Models/gameState';
+import { IGameMetaInfo, GameMD } from '../../Models/gameState';
 
-let GameData: { gameBoard: number[][] };
 export default class Connect4 extends OnlineGames {
   metaConfig: IGameMetaInfo = {
     title: 'Connect 4',
@@ -13,25 +9,46 @@ export default class Connect4 extends OnlineGames {
     imageUrl:
       'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5R4_FiAZMoc0RAFLMSLPt7_IocF6WC0SM7t7yWaxGDyAhY7x5mg',
   };
+  GameData: { gameBoard: number[][] } = {
+    gameBoard: [
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+    ],
+  };
   constructor(
     client: Discord.Client,
     message: Discord.Message,
     cmdArguments: Array<string>
   ) {
-    super(client, message, cmdArguments, GameData);
-    this.GameData = {
-      gameBoard: [
-        [0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0],
-      ],
-    };
-    this.GameConfirmationStage(this.metaConfig).then(start => {
-      start ? this.InitializeGameInDB() : console.log('STOP');
+    super(client, message, cmdArguments);
+
+    this.GameConfirmationStage().then(start => {
+      if (start) {
+        this.InitializeGameInDB().then(ready => {
+          if (ready) {
+            this.GameLifeCicle()
+              .then(end => {
+                console.log('Game Loot!');
+              })
+              .catch(e => {
+                console.log('Game Loop Error');
+                console.log(e);
+              })
+              .finally(() => {
+                console.log('GameClean up!');
+                this.cleanUpTheGameData();
+              });
+          }
+        });
+      }
       // console.log(this.gameMetaData);
     });
+  }
+  async GameLifeCicle() {
+    console.log('Game Loop');
   }
 }
