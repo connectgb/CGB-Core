@@ -50,5 +50,27 @@ export default class Connect4 extends OnlineGames {
   }
   async GameLifeCicle() {
     console.log('Game Loop');
+
+    this.msg.channel.send(this.drawBoard());
+  }
+
+  drawBoard() {
+    let board = '';
+    for (let row = 0; row < this.GameData.gameBoard.length; row++) {
+      for (let col = 0; col < this.GameData.gameBoard[row].length; col++) {
+        switch (this.GameData.gameBoard[row][col]) {
+          case 1:
+            board += ':large_blue_circle:';
+            break;
+          case 2:
+            board += ':red_circle:';
+            break;
+          default:
+            board += ':white_circle:';
+        }
+      }
+      board += '\n';
+    }
+    return board;
   }
 }

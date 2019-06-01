@@ -43,8 +43,9 @@ export abstract class OnlineGames {
    *
    */
   async GameConfirmationStage() {
-    const acceptEmoji = `🔵`; //'🔵'; '✔️'; ':heavy_check_mark:️'
-    const rejectEmoji = `🔴`; //'🔴'; '❌';':x:'
+    const acceptEmoji = `🔵`, rejectEmoji = `🔴`
+     //'🔵'; '✔️'; ':heavy_check_mark:️'
+     //'🔴'; '❌';':x:'
 
     this.gameMetaData = {
       guildID: this.msg.guild.id,
@@ -85,7 +86,7 @@ export abstract class OnlineGames {
       this.gameMetaData.playerIDs = this.gameMetaData.playerIDs.concat(ids);
       this.gameMetaData.players = this.gameMetaData.players.concat(players);
     }
-    console.log(this.gameMetaData.playerIDs);
+    // console.log(this.gameMetaData.playerIDs);
     // checks if the number of players match!
     if (
       this.gameMetaData.playerIDs.length !== this.metaConfig.numPlayers ||
