@@ -6,9 +6,8 @@ import {
 } from './HelperFunctions';
 import { UserMD, IUserState } from '../Models/userState';
 
-import { IGameMetaData, IGameMetaInfo } from '../Models/gameState';
+import { IGameMetaData, IGameMetaInfo, GameMD } from '../Models/gameState';
 import mongoose from 'mongoose';
-import { UserMD, IUserState } from '../Models/userState';
 
 export class OnlineGames {
   botClient: Discord.Client;
@@ -69,14 +68,12 @@ export class OnlineGames {
     // more than 1
     // write a function that will support more than 1 players games
     if (metaConfig.numPlayers > 1) {
-
       const e = await getMentionedPlayers(this.msg);
       // console.log(e);
       if (e === undefined) return;
       const { players, ids } = e;
       this.gameMetaData.playerIDs = this.gameMetaData.playerIDs.concat(ids);
       this.gameMetaData.players = this.gameMetaData.players.concat(players);
-
     }
     console.log(this.gameMetaData.playerIDs);
     // checks if the number of players match!
@@ -273,46 +270,6 @@ export class OnlineGames {
         console.log('error whilst updating user to lobby!');
         console.log(e);
       });
-  }
-  // Means that this function needs to be created in each child
-    const hUser = message.guild.member(message.author);
-    const cUser = message.guild.member(
-      message.mentions.users.first() || message.guild.members.get(this.args[0])
-    );
-    switch (cUser) {
-      // checks if player 2 is mentioned
-      case null:
-        message.reply('Tag another user use: connect4 <@user>');
-        return;
-      case hUser:
-        message.reply('You Cant vs Yourself!');
-        return;
-    }
-    // makes sure user mentioned is regestered in the db andplayer is not in a game
-    //@ts-ignore
-    UserMD.byUserIDnGuildID(
-      `${this.cUser}`,
-      this.msg.guild.id,
-      (err: any, userData: IUserState) => {
-        if (!userData) {
-          this.msg.reply('The user you mentioned isnt in the DB');
-          return;
-        } else {
-          switch (userData.ingame.isInGame) {
-            case true:
-              const theyAreAlreadyInAGameMSG = new Discord.RichEmbed()
-                .setColor('#F44336')
-                .setAuthor(`${this.cUser.user.tag}`)
-                .setDescription(
-                  `Player is already in a game, you can't challenge them to a game untill their current game is over`
-                );
-              this.msg.channel.send(theyAreAlreadyInAGameMSG);
-              break;
-            default:
-          }
-        }
-      }
-    );
   }
   // means that this function needs to be created in each child
   GameLifeCicle: Promise<void>;
