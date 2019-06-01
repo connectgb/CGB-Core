@@ -243,6 +243,31 @@ export class OnlineGames {
         console.log(e);
       });
   }
+
+  static async updatePlayerStatusLeaveGame(userID: string, guildID: string) {
+    // updating each player status to in game
+    await UserMD.updateMany(
+      {
+        userID,
+        guildID,
+      },
+      {
+        ingame: {
+          gameID: null,
+          isInGame: false,
+          lastGame: Date.now(),
+        },
+      }
+    )
+      .exec()
+      .then(updatedData => {
+        // console.log(updatedData);
+      })
+      .catch(e => {
+        console.log('error whilst updating user to lobby!');
+        console.log(e);
+      });
+  }
   // Means that this function needs to be created in each child
   GameLifeCicle: Promise<void>;
 }

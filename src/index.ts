@@ -31,7 +31,12 @@ botClient.on('message', receivedMessage => {
           );
           return true;
         } else {
-          switch (userData.ingame.isInGame) {
+          let commands = receivedMessage.content
+            .substr(process.env.BOT_PREFIX.length)
+            .split(' ');
+          let primaryCmd = commands[0];
+          let argsCmd = commands.slice(1);
+          switch (userData.ingame.isInGame && primaryCmd !== '!leaveGame') {
             case true:
               const youAreAlreadyInAGameMSG = new Discord.RichEmbed()
                 .setColor('#F44336')
@@ -44,11 +49,7 @@ botClient.on('message', receivedMessage => {
               break;
             default:
               // parsing the command sent to the bot to main command and arguments
-              let commands = receivedMessage.content
-                .substr(process.env.BOT_PREFIX.length)
-                .split(' ');
-              let primaryCmd = commands[0];
-              let argsCmd = commands.slice(1);
+
               let gameCommandClass = GameCommandsOBJ[primaryCmd];
               gameCommandClass
                 ? new gameCommandClass(botClient, receivedMessage, argsCmd)

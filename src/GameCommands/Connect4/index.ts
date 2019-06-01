@@ -29,7 +29,7 @@ export default class Connect4 extends OnlineGames {
     };
     this.GameConfirmationStage(this.metaConfig).then(start => {
       start ? this.InitializeGameInDB() : console.log('STOP');
-      // console.log(this.gameMetaData);
+      console.log(this.gameMetaData);
     });
   }
 }
