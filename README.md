@@ -3,7 +3,7 @@
 Join the discord to get a feel for the bot in action!
 [link to the discord][discordlink] this link is a temparty link there for you will be kick out of server where you disconnect. if you want to join the effort please send me a message
 
-If you want the bot on your server go [HERE](). you will need to varify your server with an Api key on the website
+If you want the bot on your server go [HERE](). You will need to varify your server later on with an Api key which you can get on the website
 
 ---
 ## Trello Board
