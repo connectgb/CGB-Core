@@ -1,3 +1,5 @@
+
+
 import * as Discord from 'discord.js';
 import mongoose from 'mongoose';
 import { OnlineGames } from '../OnlineGame';
@@ -29,7 +31,7 @@ export default class Connect4 extends OnlineGames {
     };
     this.GameConfirmationStage(this.metaConfig).then(start => {
       start ? this.InitializeGameInDB() : console.log('STOP');
-      console.log(this.gameMetaData);
+      // console.log(this.gameMetaData);
     });
   }
 }

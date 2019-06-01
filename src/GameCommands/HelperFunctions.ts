@@ -63,11 +63,13 @@ export async function getMentionedPlayers(msg: Discord.Message) {
   // console.log(playersinfo.ids);
   // console.log('reached here');
   if (playersinfo.ids && playersinfo.ids.length === 0) {
+
     // checks if player 2 is mentioned
     await msg.reply('Tag another user use: <@user>');
     return;
   }
   // checks if your not vs yourself
+
   if (playersinfo.ids.includes(msg.author.id)) {
     await msg.reply('Cannot Tag Yourself!');
     return;

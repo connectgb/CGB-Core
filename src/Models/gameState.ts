@@ -1,4 +1,5 @@
 import * as Discord from 'discord.js';
+
 import { Schema, model, Document, Model } from 'mongoose';
 import { userDiscordSchema } from './userState';
 
@@ -43,6 +44,7 @@ export interface IGameMetaInfo {
 export interface IGameMetaData {
   guildID: string;
   gameID: string;
+
   status: 'REJECTED' | 'ACCEPTED';
   accepted: boolean;
   players?: Array<Discord.User>;
