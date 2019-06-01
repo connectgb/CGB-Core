@@ -1,5 +1,5 @@
-import mongoose from 'mongoose';
-const Schema = mongoose.Schema;
+import { Schema, model, Model, Document } from 'mongoose';
+
 const userSchema = new Schema({
   userID: { type: String, unique: true, required: true, index: true },
   guildID: { type: String, required: true, index: true },
@@ -15,13 +15,24 @@ const userSchema = new Schema({
     xp: { type: Number, default: 0 },
   },
   ingame: {
-    gameID: { type: Schema.Types.ObjectId, ref: 'Game', default: null },
+    gameID: { type: String, ref: 'Game', default: null },
     isInGame: { type: Boolean, default: false },
+    lastGame: { type: Date, default: null },
   },
 });
 
+export const userDiscordSchema = new Schema(
+  {
+    id: { type: String, required: true },
+    username: { type: String, required: true },
+    discriminator: { type: String, required: true },
+    avatar: { type: String, required: true },
+    lastMessageID: { type: String, default: null },
+  },
+  { _id: false }
+);
+
 export interface IUserState {
-  _id: string;
   userID: string;
   level: {
     current: number;
@@ -31,13 +42,16 @@ export interface IUserState {
     wins: number;
     loses: number;
     streak: number;
+    joinedDate: Date;
   };
   coins: number;
   ingame: {
     gameID: string;
     isInGame: boolean;
+    lastGame: Date;
   };
 }
+interface IUserStateDoc extends Document, IUserState {}
 // all instances will have acces to this when doing UserMD.findOne().byUserID('usersID')
 userSchema.statics.byUserIDnGuildID = function(
   userID: string,
@@ -47,4 +61,4 @@ userSchema.statics.byUserIDnGuildID = function(
   return this.findOne({ userID, guildID }, cb);
 };
 
-export const UserMD = mongoose.model('User', userSchema, 'Users');
+export const UserMD: Model<IUserStateDoc> = model('User', userSchema, 'Users');

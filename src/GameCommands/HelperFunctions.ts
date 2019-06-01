@@ -31,46 +31,44 @@ export async function getMentionedPlayers(msg: Discord.Message) {
     players: [],
     ids: [],
   };
-
   // makes sure user mentioned is regestered in the db andplayer is not in a game
-  await msg.mentions.users.forEach(function(user) {
+  const usersIter = msg.mentions.users.values();
+  // msg.mentions.users.forEach(async function(user) {
+  for (let i = 0; i < msg.mentions.users.size; i++) {
+    let user = usersIter.next();
+
+    console.log(user.value);
     // @ts-ignore
-    UserMD.byUserIDnGuildID(
-      `${user.id}`,
-      msg.guild.id,
-      async (err: any, userData: IUserState) => {
-        // console.log(userData);
-        if (!userData) {
-          await msg.reply(`The user ${user} you mentioned isnt in the DB`);
-          return;
-        } else if (userData.ingame.isInGame === true) {
-          const theyAreAlreadyInAGameMSG = new Discord.RichEmbed()
-            .setColor('#F44336')
-            .setAuthor(user)
-            .setDescription(
-              `player is already in a game, you can't challenge them to a game untill their current game is over`
-            );
-          await msg.channel.send(theyAreAlreadyInAGameMSG);
-          return;
-        } else {
-          // console.log(this.gameMetaData.playerIDs);
-        }
-      }
-    );
+    const userData: IUserState = await UserMD.byUserIDnGuildID(
+      `${user.value.id}`,
+      msg.guild.id
+    ).exec();
 
-    playersinfo.players.push(user);
-    playersinfo.ids.push(msg.guild.member(user).id);
-    // console.log(playersinfo.ids);
-  });
+    if (!userData) {
+      await msg.reply(`The user ${user.value} you mentioned isnt in the DB`);
+    } else if (userData.ingame.isInGame === true) {
+      const theyAreAlreadyInAGameMSG = new Discord.RichEmbed()
+        .setColor('#F44336')
+        .setAuthor(user.value.username)
+        .setDescription(
+          `player is already in a game, you can't challenge them to a game untill their current game is over`
+        );
+      await msg.channel.send(theyAreAlreadyInAGameMSG);
+    } else {
+      playersinfo.players.push(user.value);
+      playersinfo.ids.push(msg.guild.member(user.value).id);
+    }
+  }
 
+  // console.log(playersinfo.ids);
   // console.log('reached here');
-  if (playersinfo.ids && playersinfo.ids === undefined) {
+  if (playersinfo.ids && playersinfo.ids.length === 0) {
     // checks if player 2 is mentioned
     await msg.reply('Tag another user use: <@user>');
     return;
   }
   // checks if your not vs yourself
-  if (msg.author.id in playersinfo.ids) {
+  if (playersinfo.ids.includes(msg.author.id)) {
     await msg.reply('Cannot Tag Yourself!');
     return;
   } else {
