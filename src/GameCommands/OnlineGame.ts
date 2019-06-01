@@ -31,7 +31,17 @@ export abstract class OnlineGames {
     this.hUser = message.guild.member(message.author);
   }
 
-  // Confirmation Stage Both players Must Accept for the game to be registered
+  /**
+   * Confirmation Stage:
+   * - Sends out a message to the channel which the initial game invite was sent.
+   * - Both players must Accept by reacting with the accept emojie for the game to be registered.
+   *
+   * validation:
+   * - Checks if the player is part of the database
+   * - Whether or not the other players are in a game.
+   * - Checks if the number of players needed for the game to start is met.
+   *
+   */
   async GameConfirmationStage() {
     const acceptEmoji = `🔵`; //'🔵'; '✔️'; ':heavy_check_mark:️'
     const rejectEmoji = `🔴`; //'🔴'; '❌';':x:'
@@ -226,6 +236,12 @@ export abstract class OnlineGames {
       return false;
     }
   }
+
+  /**
+   * Join the game:
+   * - queries the database for userID's that are in the gameMetaData.playerIDs array in the same guildID that the initial game invite message was sent.
+   * - updates the users status to being in a game + gameID + last game played date to now!
+   */
   async updatePlayersStatusJoinGame() {
     // updating each players status to in game
     await UserMD.updateMany(
@@ -250,7 +266,11 @@ export abstract class OnlineGames {
         console.log(e);
       });
   }
-
+  /**
+   * formats the user game status to default! careful
+   * @param userID the user id to format game status
+   * @param guildID the guild id that the user is in
+   */
   static async updatePlayerStatusLeaveGame(userID: string, guildID: string) {
     // updating each player status to in game
     await UserMD.updateMany(
@@ -275,7 +295,11 @@ export abstract class OnlineGames {
         console.log(e);
       });
   }
-
+  /**
+   * This function should be ran at the end of each online game.
+   * - Deletes the game data on the database
+   * - removes each player from the game + sets their status to not in a game.
+   */
   async cleanUpTheGameData() {
     try {
       //@ts-ignore
