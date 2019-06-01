@@ -1,3 +1,4 @@
+
 import { Schema, model, Model, Document } from 'mongoose';
 
 const userSchema = new Schema({
@@ -15,6 +16,7 @@ const userSchema = new Schema({
     xp: { type: Number, default: 0 },
   },
   ingame: {
+
     gameID: { type: String, ref: 'Game', default: null },
     isInGame: { type: Boolean, default: false },
     lastGame: { type: Date, default: null },
@@ -33,6 +35,7 @@ export const userDiscordSchema = new Schema(
 );
 
 export interface IUserState {
+  _id: string;
   userID: string;
   level: {
     current: number;
@@ -52,6 +55,7 @@ export interface IUserState {
   };
 }
 interface IUserStateDoc extends Document, IUserState {}
+
 // all instances will have acces to this when doing UserMD.findOne().byUserID('usersID')
 userSchema.statics.byUserIDnGuildID = function(
   userID: string,

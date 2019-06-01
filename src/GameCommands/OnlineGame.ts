@@ -23,6 +23,7 @@ export class OnlineGames {
     message: Discord.Message,
     cmdArguments: Array<string>,
     InitialGameData?: any
+
     // DB_CONNECTION: typeof mongoose
   ) {
     // init variables
