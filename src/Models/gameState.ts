@@ -27,11 +27,7 @@ const GameMetaDataSchema = new Schema(
 );
 const GameSchema = new Schema({
   meta: GameMetaDataSchema,
-  env: {
-    onGoing: { type: Boolean, default: true },
-    playerTurn: { type: Number, default: 1 },
-  },
-  props: { type: Map, of: Schema.Types.Mixed, required: true },
+  onGoing: { type: Boolean, default: true },
 });
 
 export interface IGameMetaInfo {
@@ -44,7 +40,6 @@ export interface IGameMetaInfo {
 export interface IGameMetaData {
   guildID: string;
   gameID: string;
-
   status: 'REJECTED' | 'ACCEPTED';
   accepted: boolean;
   players?: Array<Discord.User>;
@@ -56,11 +51,7 @@ export interface IGameMetaData {
 
 export interface IGameData {
   meta: IGameMetaData;
-  env: {
-    onGoing: Boolean;
-    playerTurn: number;
-  };
-  props: any;
+  onGoing: Boolean;
 }
 interface IGameDataDoc extends Document, IGameData {}
 

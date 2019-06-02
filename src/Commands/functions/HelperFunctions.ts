@@ -1,5 +1,5 @@
 import * as Discord from 'discord.js';
-import { UserMD, IUserState } from '../Models/userState';
+import { UserMD, IUserState } from '../../Models/userState';
 export function allPlayerTaggedString(
   ArrayOfPlayers: Array<Discord.User>,
   endMessage: string

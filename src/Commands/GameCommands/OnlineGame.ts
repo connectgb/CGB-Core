@@ -3,10 +3,10 @@ import {
   allPlayerTaggedString,
   getMentionedPlayers,
   uuidv4,
-} from './HelperFunctions';
-import { UserMD, IUserState } from '../Models/userState';
+} from './../functions/HelperFunctions';
+import { UserMD, IUserState } from '../../Models/userState';
 
-import { IGameMetaData, IGameMetaInfo, GameMD } from '../Models/gameState';
+import { IGameMetaData, IGameMetaInfo, GameMD } from '../../Models/gameState';
 import mongoose from 'mongoose';
 
 //@ts-ignore
@@ -43,9 +43,10 @@ export abstract class OnlineGames {
    *
    */
   async GameConfirmationStage() {
-    const acceptEmoji = `🔵`, rejectEmoji = `🔴`
-     //'🔵'; '✔️'; ':heavy_check_mark:️'
-     //'🔴'; '❌';':x:'
+    const acceptEmoji = `🔵`,
+      rejectEmoji = `🔴`;
+    //'🔵'; '✔️'; ':heavy_check_mark:️'
+    //'🔴'; '❌';':x:'
 
     this.gameMetaData = {
       guildID: this.msg.guild.id,
@@ -117,34 +118,32 @@ export abstract class OnlineGames {
 
     let ConfirmationMSGSent: Discord.Message = (await this.msg.channel.send(
       ConfirmationMSG
-      //@ts-ignore
     )) as Discord.Message;
 
-    await ConfirmationMSGSent.react(acceptEmoji);
-    await ConfirmationMSGSent.react(rejectEmoji);
+    // waits for the reactions to be added
+    await Promise.all([
+      ConfirmationMSGSent.react(acceptEmoji),
+      ConfirmationMSGSent.react(rejectEmoji),
+    ]);
+
+    //filter function. only players taking part in the game and one the accept and reject emojies are being captured
+    const filter = (
+      reaction: Discord.MessageReaction,
+      user: Discord.GuildMember
+    ) => {
+      for (let playerAllowedID in this.gameMetaData.playerIDs) {
+        if (
+          user.id === this.gameMetaData.playerIDs[playerAllowedID] &&
+          (reaction.emoji.name === acceptEmoji ||
+            reaction.emoji.name === rejectEmoji)
+        )
+          return true;
+      }
+      return false;
+    };
     // listens for all players decision to play or not
     await ConfirmationMSGSent.awaitReactions(
-      //filter function. only players taking part in the game and one the accept and reject emojies are being captured
-      (reaction: Discord.MessageReaction, user: Discord.GuildMember) => {
-        // Discord.ReactionEmoji
-        for (let playerAllowedID in this.gameMetaData.playerIDs) {
-          // FINALLY GOT IT !
-          // console.log(user.id);
-          // console.log(this.gameMetaData.playerIDs[playerAllowedID]);
-          // console.log(
-          //   user.id === this.gameMetaData.playerIDs[playerAllowedID] &&
-          //     (reaction.emoji.name === acceptEmoji ||
-          //       reaction.emoji.name === rejectEmoji)
-          // );
-          if (
-            user.id === this.gameMetaData.playerIDs[playerAllowedID] &&
-            (reaction.emoji.name === acceptEmoji ||
-              reaction.emoji.name === rejectEmoji)
-          )
-            return true;
-        }
-        return false;
-      },
+      filter,
       { time: 6000 } // waits for 6ms => 6 seconds
     )
       .then(reactionResults => {
@@ -202,28 +201,26 @@ export abstract class OnlineGames {
 
     try {
       const InitializeGameData = new GameMD({
-        env: { playerTurn: Math.floor(Math.random() * players.length) },
         meta: metaDataToSend,
-        props: this.GameData,
       });
-      await InitializeGameData.save();
+      const { _id } = await InitializeGameData.save();
       // saved game data
       const succesfulInitializeMSG = new Discord.RichEmbed()
         .setTitle('Succesful Initialization')
-        .setDescription('Succesfully to initialize the game on our Servers')
+        .setDescription('Succesfully initialized the game on our servers')
         .addField('GameID', this.gameMetaData.gameID)
         .setFooter('Adding Player(s) To The Lobby')
         .setColor('#2ECC40');
 
       await this.msg.channel.send(succesfulInitializeMSG);
-      await this.updatePlayersStatusJoinGame();
+      await this.updatePlayersStatusJoinGame(_id);
       return true;
     } catch (e) {
       console.log(e);
       // Failed to save game data
       const failedInitializeMSG = new Discord.RichEmbed()
         .setTitle('Failed Initialization ')
-        .setDescription('Failed to initialize the game on our Servers')
+        .setDescription('Failed to initialize the game on our servers')
         .addField('GameID', this.gameMetaData.gameID)
         .addField('Name', e.name ? e.name : '')
         .addField('Message', e.message ? e.message : '')
@@ -243,7 +240,7 @@ export abstract class OnlineGames {
    * - queries the database for userID's that are in the gameMetaData.playerIDs array in the same guildID that the initial game invite message was sent.
    * - updates the users status to being in a game + gameID + last game played date to now!
    */
-  async updatePlayersStatusJoinGame() {
+  async updatePlayersStatusJoinGame(_id: any) {
     // updating each players status to in game
     await UserMD.updateMany(
       {
@@ -252,7 +249,7 @@ export abstract class OnlineGames {
       },
       {
         ingame: {
-          gameID: this.gameMetaData.gameID,
+          gameID: _id, //this.gameMetaData.gameID,
           isInGame: true,
           lastGame: Date.now(),
         },

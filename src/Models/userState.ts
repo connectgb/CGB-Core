@@ -15,7 +15,7 @@ const userSchema = new Schema({
     xp: { type: Number, default: 0 },
   },
   ingame: {
-    gameID: { type: String, ref: 'Game', default: null },
+    gameID: { type: Schema.Types.ObjectId, ref: 'Game', default: null },
     isInGame: { type: Boolean, default: false },
     lastGame: { type: Date, default: null },
   },

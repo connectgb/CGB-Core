@@ -1,5 +1,5 @@
 import * as Discord from 'discord.js';
-import { GameCommandsOBJ } from './GameCommands';
+import { GameCommandsOBJ } from './Commands';
 import { Database } from './Database';
 import { UserMD, IUserState } from './Models/userState';
 
@@ -86,7 +86,7 @@ async function createNewUserProfile(
     .then(data => {
       // new user created success message
       const successfulNewAccountMSG = new Discord.RichEmbed()
-        .setColor('#2ECC4')
+        .setColor('#60BE824')
         .setAuthor(`${userDiscordInfo.tag}`)
         .setTitle('New Account Created!')
         .setDescription(

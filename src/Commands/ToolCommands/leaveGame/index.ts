@@ -1,6 +1,6 @@
 import * as Discord from 'discord.js';
-import { OnlineGames } from '../OnlineGame';
-import { UserMD, IUserState } from '../../Models/userState';
+import { OnlineGames } from '../../GameCommands/OnlineGame';
+import { UserMD, IUserState } from '../../../Models/userState';
 
 export default class LeaveGame {
   constructor(
