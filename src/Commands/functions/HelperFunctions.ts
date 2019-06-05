@@ -69,6 +69,13 @@ export async function getMentionedPlayers(msg: Discord.Message) {
 
   if (playersinfo.ids.includes(msg.author.id)) {
     await msg.reply('Cannot Tag Yourself!');
+    const noTagSelf = new Discord.RichEmbed()
+      .setColor('#F44336')
+      .setTitle('Error')
+      .setDescription(
+        'You cannot tag yourself!'
+      )
+
     return;
   } else {
     // console.log(playersinfo.ids);
