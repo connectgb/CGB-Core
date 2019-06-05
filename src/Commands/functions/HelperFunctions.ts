@@ -75,6 +75,7 @@ export async function getMentionedPlayers(msg: Discord.Message) {
 
     await msg.channel.send(noTagSelf);
 
+
     return;
   } else {
     // console.log(playersinfo.ids);
