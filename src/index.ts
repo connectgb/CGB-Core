@@ -86,7 +86,7 @@ async function createNewUserProfile(
     .then(data => {
       // new user created success message
       const successfulNewAccountMSG = new Discord.RichEmbed()
-        .setColor('#60BE824')
+        .setColor('##60BE82')
         .setAuthor(`${userDiscordInfo.tag}`)
         .setTitle('New Account Created!')
         .setDescription(

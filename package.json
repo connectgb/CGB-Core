@@ -1,10 +1,12 @@
 {
   "name": "discord-mini-games",
   "author": "Isaac Diaby <isaac.diaby.code@gmail.com>",
-  "contributors": ["Gregor Christie <techattax100@gmail.com>"],
+  "contributors": [
+    "Gregor Christie <techattax100@gmail.com>"
+  ],
   "license": "MIT",
   "version": "1.0.0",
-  "description": "",
+  "description": "Paid Discord bot, allwos you to play chat games, trade and much more!",
   "main": "src/index.js",
   "scripts": {
     "start": "nodemon --watch 'src/**/*.ts' --ignore 'src/**/*.spec.ts' --exec 'ts-node' src/index.ts",
@@ -14,7 +16,6 @@
     "type": "git",
     "url": "git+https://github.com/isaac-diaby/Discord_MiniGames"
   },
-
   "bugs": {
     "url": "https://github.com/isaac-diaby/Discord_MiniGames/issues"
   },
@@ -30,5 +31,8 @@
     "typescript": "^3.4.3",
     "nodemon": "1.18.4"
   },
-  "keywords": ["discord", "mini games", "games For Discod", "bot"]
+  "keywords": [
+    "discord bot",
+    "private"
+  ]
 }

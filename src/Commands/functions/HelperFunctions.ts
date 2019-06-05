@@ -68,13 +68,13 @@ export async function getMentionedPlayers(msg: Discord.Message) {
   // checks if your not vs yourself
 
   if (playersinfo.ids.includes(msg.author.id)) {
-    await msg.reply('Cannot Tag Yourself!');
     const noTagSelf = new Discord.RichEmbed()
       .setColor('#F44336')
       .setTitle('Error')
-      .setDescription(
-        'You cannot tag yourself!'
-      )
+      .setDescription('You cannot tag yourself!');
+
+    await msg.channel.send(noTagSelf);
+
 
     return;
   } else {
