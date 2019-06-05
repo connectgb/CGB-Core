@@ -101,7 +101,7 @@ export abstract class OnlineGames {
       return;
     }
     // custume 2 player games
-    if (this.gameMetaData.players.length == 2)
+    if (this.gameMetaData.players.length === 2)
       ConfirmationMSG.setAuthor(
         `${this.hUser.user.username} ---VS--- ${
           this.gameMetaData.players[1].username
@@ -150,7 +150,7 @@ export abstract class OnlineGames {
         // console.log(reactionResults.get(acceptEmoji));
         if (
           reactionResults.get(acceptEmoji) == null ||
-          reactionResults.get(acceptEmoji).count - 1 !=
+          reactionResults.get(acceptEmoji).count - 1 !==
             this.metaConfig.numPlayers
         ) {
           // not everyone is ready *minus one for the bot
@@ -210,6 +210,7 @@ export abstract class OnlineGames {
         .setDescription('Succesfully initialized the game on our servers')
         .addField('GameID', this.gameMetaData.gameID)
         .setFooter('Adding Player(s) To The Lobby')
+        .setTimestamp()
         .setColor('#2ECC40');
 
       await this.msg.channel.send(succesfulInitializeMSG);
@@ -224,7 +225,7 @@ export abstract class OnlineGames {
         .addField('GameID', this.gameMetaData.gameID)
         .addField('Name', e.name ? e.name : '')
         .addField('Message', e.message ? e.message : '')
-
+        .setTimestamp()
         .setFooter(
           'Issue: https://github.com/isaac-diaby/Discord_MiniGames/issues'
         )
@@ -314,6 +315,7 @@ export abstract class OnlineGames {
         .setTitle('Games Close')
         .setDescription('successfully closed the game on our servers')
         .addField('GameID', this.gameMetaData.gameID)
+        .setTimestamp()
         .setColor('#2ECC40');
 
       this.msg.channel.send(gameClosedeMSG);
