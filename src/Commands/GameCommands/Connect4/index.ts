@@ -3,7 +3,7 @@ import { OnlineGames } from '../OnlineGame';
 import { IGameMetaInfo, GameMD } from '../../../Models/gameState';
 
 /**
- * Connect 4 in a wor to win game.
+ * Connect 4 in a row to win game.
  * https://github.com/bryanbraun/connect-four
  */
 export default class Connect4 extends OnlineGames {
@@ -32,7 +32,7 @@ export default class Connect4 extends OnlineGames {
       [0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0],
     ],
-    playerTurn: Math.floor(Math.random() * this.metaConfig.numPlayers),
+    playerTurn: Math.floor(Math.random() * this.metaConfig.numPlayers) + 1,
     config: {
       countToWin: 4,
       // note: board dimensions are zero-indexed
@@ -52,8 +52,32 @@ export default class Connect4 extends OnlineGames {
         this.InitializeGameInDB().then(ready => {
           if (ready) {
             this.GameLifeCicle()
-              .then(end => {
+              .then(async end => {
                 console.log('Game Loot!');
+                if (this.isGameADraw()) {
+                  await this.rewardPlayer(
+                    2,
+                    this.gameMetaData.players[0].id,
+                    false
+                  );
+                  await this.rewardPlayer(
+                    2,
+                    this.gameMetaData.players[1].id,
+                    false
+                  );
+                } else {
+                  const lostIndex = this.GameData.playerTurn === 1 ? 2 : 1;
+                  await this.rewardPlayer(
+                    5,
+                    this.gameMetaData.players[this.GameData.playerTurn - 1].id,
+                    true
+                  );
+                  await this.rewardPlayer(
+                    1,
+                    this.gameMetaData.players[lostIndex - 1].id,
+                    false
+                  );
+                }
               })
               .catch(e => {
                 console.log('Game Loop Error');
@@ -73,8 +97,46 @@ export default class Connect4 extends OnlineGames {
     console.log('Game Loop');
     this.GameData.onGoing = true;
     while (this.GameData.onGoing) {
-      await this.takeTurn(this.GameData.playerTurn).then(next => {
-        this.GameData.playerTurn = this.GameData.playerTurn === 1 ? 2 : 1;
+      await this.takeTurn(this.GameData.playerTurn).then(async next => {
+        switch (
+          this.isVerticalWin() ||
+            this.isHorizontalWin() ||
+            this.isDiagonalWin() ||
+            this.isGameADraw()
+        ) {
+          case true:
+            this.GameData.onGoing = false;
+            const gameWinLoseDisplayMSG = new Discord.RichEmbed()
+              .addField('Current Board', this.drawBoard())
+              .setFooter(this.gameMetaData.gameID);
+
+            switch (this.isGameADraw()) {
+              case true:
+                gameWinLoseDisplayMSG
+                  .setColor('#001900')
+                  .setDescription('the game ended in a draw!')
+                  .addField('Coins adding', 2, true);
+                break;
+              default:
+                gameWinLoseDisplayMSG
+                  .setColor(
+                    this.GameData.playerTurn === 1 ? '#4871EA' : '#CF2907'
+                  )
+                  .addField(
+                    'Winner',
+                    this.gameMetaData.players[this.GameData.playerTurn - 1],
+                    true
+                  )
+                  .addField('Coins adding', 5, true);
+            }
+            await this.msg.channel.send(gameWinLoseDisplayMSG);
+
+            break;
+          default:
+            this.GameData.playerTurn = this.GameData.playerTurn === 1 ? 2 : 1;
+            break;
+        }
+        // console.log('switching Turn');
       });
     }
   }
@@ -87,12 +149,12 @@ export default class Connect4 extends OnlineGames {
       // slotEmojis = ['0️⃣', '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣'],
       gameBoardDisplayMSG = new Discord.RichEmbed()
         .setTitle(
-          `Its ${this.gameMetaData.players[playerTurn].username}'s turn`
+          `Its ${this.gameMetaData.players[playerTurn - 1].username}'s turn`
         )
         .setDescription(
           `Listening for a slow number 0-${this.GameData.config.boardLength}`
         )
-        .setColor(playerTurn === 1 ? '#CF2907' : '#4871EA')
+        .setColor(playerTurn === 1 ? '#4871EA' : '#CF2907')
         .addField('Current Board', currentBoard)
         .setFooter(this.gameMetaData.gameID);
 
@@ -101,25 +163,267 @@ export default class Connect4 extends OnlineGames {
     )) as Discord.Message;
 
     let slotSelected = await this.listenToslotSelection(sentBoardMSG);
-    console.log(slotSelected);
     // validating that the selected slot is available etc
-    let attempt = 1;
+    let attempts = 1;
     const attemptLimit = 3;
     while (
       slotSelected > this.GameData.config.boardLength ||
       slotSelected < 0 ||
-      this.isPositionTaken(slotSelected, 0) ||
-      attempt < attemptLimit
+      (this.isPositionTaken(slotSelected) && attempts < attemptLimit)
     ) {
       sentBoardMSG.channel.send(
-        `${this.gameMetaData.players[playerTurn]} please select a slot 0-${
+        `${this.gameMetaData.players[playerTurn - 1]} please select a slot 0-${
           this.GameData.config.boardLength
         }`
       );
       slotSelected = await this.listenToslotSelection(sentBoardMSG);
-      ++attempt;
+      attempts++;
+      // console.log(attempts);
     }
-    console.log(slotSelected);
+    // places the slot at the bottom
+    this.GameData.gameBoard[this.dropToBottom(slotSelected)][
+      slotSelected
+    ] = playerTurn;
+
+    // check if player won?
+  }
+  /**
+   * Determine if the game is a draw (all peices on the board are filled).
+   *
+   * @return bool Returns true or false for the question "Is this a draw?".
+   */
+  isGameADraw() {
+    for (let y = 0; y <= this.GameData.config.boardHeight; y++) {
+      for (let x = 0; x <= this.GameData.config.boardLength; x++) {
+        if (!this.isPositionTaken(x, y)) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Test to see if somebody got four consecutive horizontal pieces.
+   *
+   * @return bool Returns true if a win was found, and otherwise false.
+   */
+  isHorizontalWin() {
+    let currentValue = null,
+      previousValue = 0,
+      tally = 0;
+
+    // Scan each row in series, tallying the length of each series. If a series
+    // ever reaches four, return true for a win.
+    for (let y = 0; y <= this.GameData.config.boardHeight; y++) {
+      for (let x = 0; x <= this.GameData.config.boardLength; x++) {
+        currentValue = this.GameData.gameBoard[y][x];
+        if (currentValue === previousValue && currentValue !== 0) {
+          tally += 1;
+        } else {
+          // Reset the tally if you find a gap.
+          tally = 0;
+        }
+        if (tally === this.GameData.config.countToWin - 1) {
+          return true;
+        }
+        previousValue = currentValue;
+      }
+
+      // After each row, reset the tally and previous value.
+      tally = 0;
+      previousValue = 0;
+    }
+
+    // No horizontal win was found.
+    return false;
+  }
+
+  /**
+   * Test to see if somebody got four consecutive vertical pieces.
+   *
+   * @return bool Returns true if a win was found, and otherwise false.
+   */
+  isVerticalWin() {
+    let currentValue = null,
+      previousValue = 0,
+      tally = 0;
+
+    // Scan each column in series, tallying the length of each series. If a
+    // series ever reaches four, return true for a win.
+    for (let x = 0; x <= this.GameData.config.boardLength; x++) {
+      for (let y = 0; y <= this.GameData.config.boardHeight; y++) {
+        currentValue = this.GameData.gameBoard[y][x];
+        if (currentValue === previousValue && currentValue !== 0) {
+          tally += 1;
+        } else {
+          // Reset the tally if you find a gap.
+          tally = 0;
+        }
+        if (tally === this.GameData.config.countToWin - 1) {
+          return true;
+        }
+        previousValue = currentValue;
+      }
+
+      // After each column, reset the tally and previous value.
+      tally = 0;
+      previousValue = 0;
+    }
+
+    // No vertical win was found.
+    return false;
+  }
+
+  /**
+   * Test to see if somebody got four consecutive diagonel pieces.
+   *
+   * @return bool Returns true if a win was found, and otherwise false.
+   */
+  isDiagonalWin() {
+    let x = null,
+      y = null,
+      xtemp = null,
+      ytemp = null,
+      currentValue = null,
+      previousValue = 0,
+      tally = 0;
+
+    // Test for down-right diagonals across the top.
+    for (x = 0; x <= this.GameData.config.boardLength; x++) {
+      xtemp = x;
+      ytemp = 0;
+
+      while (
+        xtemp <= this.GameData.config.boardLength &&
+        ytemp <= this.GameData.config.boardHeight
+      ) {
+        currentValue = this.GameData.gameBoard[ytemp][xtemp];
+        if (currentValue === previousValue && currentValue !== 0) {
+          tally += 1;
+        } else {
+          // Reset the tally if you find a gap.
+          tally = 0;
+        }
+        if (tally === this.GameData.config.countToWin - 1) {
+          return true;
+        }
+        previousValue = currentValue;
+
+        // Shift down-right one diagonal index.
+        xtemp++;
+        ytemp++;
+      }
+      // Reset the tally and previous value when changing diagonals.
+      tally = 0;
+      previousValue = 0;
+    }
+
+    // Test for down-left diagonals across the top.
+    for (x = 0; x <= this.GameData.config.boardLength; x++) {
+      xtemp = x;
+      ytemp = 0;
+
+      while (0 <= xtemp && ytemp <= this.GameData.config.boardHeight) {
+        currentValue = this.GameData.gameBoard[ytemp][xtemp];
+        if (currentValue === previousValue && currentValue !== 0) {
+          tally += 1;
+        } else {
+          // Reset the tally if you find a gap.
+          tally = 0;
+        }
+        if (tally === this.GameData.config.countToWin - 1) {
+          return true;
+        }
+        previousValue = currentValue;
+
+        // Shift down-left one diagonal index.
+        xtemp--;
+        ytemp++;
+      }
+      // Reset the tally and previous value when changing diagonals.
+      tally = 0;
+      previousValue = 0;
+    }
+
+    // Test for down-right diagonals down the left side.
+    for (y = 0; y <= this.GameData.config.boardHeight; y++) {
+      xtemp = 0;
+      ytemp = y;
+
+      while (
+        xtemp <= this.GameData.config.boardLength &&
+        ytemp <= this.GameData.config.boardHeight
+      ) {
+        currentValue = this.GameData.gameBoard[ytemp][xtemp];
+        if (currentValue === previousValue && currentValue !== 0) {
+          tally += 1;
+        } else {
+          // Reset the tally if you find a gap.
+          tally = 0;
+        }
+        if (tally === this.GameData.config.countToWin - 1) {
+          return true;
+        }
+        previousValue = currentValue;
+
+        // Shift down-right one diagonal index.
+        xtemp++;
+        ytemp++;
+      }
+      // Reset the tally and previous value when changing diagonals.
+      tally = 0;
+      previousValue = 0;
+    }
+
+    // Test for down-left diagonals down the right side.
+    for (y = 0; y <= this.GameData.config.boardHeight; y++) {
+      xtemp = this.GameData.config.boardLength;
+      ytemp = y;
+
+      while (0 <= xtemp && ytemp <= this.GameData.config.boardHeight) {
+        currentValue = this.GameData.gameBoard[ytemp][xtemp];
+        if (currentValue === previousValue && currentValue !== 0) {
+          tally += 1;
+        } else {
+          // Reset the tally if you find a gap.
+          tally = 0;
+        }
+        if (tally === this.GameData.config.countToWin - 1) {
+          return true;
+        }
+        previousValue = currentValue;
+
+        // Shift down-left one diagonal index.
+        xtemp--;
+        ytemp++;
+      }
+      // Reset the tally and previous value when changing diagonals.
+      tally = 0;
+      previousValue = 0;
+    }
+
+    // No diagonal wins found. Return false.
+    return false;
+  }
+
+  /**
+   * If there are empty positions below the one chosen, return the new y-position
+   * we should drop the piece to.
+   *
+   * @param number x_pos The x-position of the location chosen.
+   * @param number y_pos The y-position of the location chosen.
+   * @return number - The y-position the disc should fall into.
+   */
+  dropToBottom(x_pos: number, y_pos: number = 0) {
+    // Start at the bottom of the column, and step up, checking to make sure
+    // each position has been filled. If one hasn't, return the empty position.
+    for (let y = this.GameData.config.boardHeight; y > y_pos; y--) {
+      if (!this.isPositionTaken(x_pos, y)) {
+        return y;
+      }
+    }
+    return y_pos;
   }
   /**
    * Test to ensure the chosen location isn't taken.
@@ -128,23 +432,20 @@ export default class Connect4 extends OnlineGames {
    * @param number y_pos The y-position of the location chosen.
    * @return bool returns true or false for the question "Is this spot taken?".
    */
-  isPositionTaken(x_pos: number, y_pos: number) {
+  isPositionTaken(x_pos: number, y_pos: number = 0) {
     return this.GameData.gameBoard[y_pos][x_pos] !== 0;
   }
-  async listenToslotSelection(board: Discord.Message): Promise<number> {
-    const slotOption = ['0', '1', '3', '4', '5', '6'];
-    const playerTurnOnlyFilter: Discord.CollectorFilter = message => {
-      console.log(message.user);
-      console.log(this.gameMetaData.playerIDs[this.GameData.playerTurn - 1]);
-      console.log(slotOption.includes(message.content));
 
-      console.log(
-        message.auther.id ===
-          this.gameMetaData.playerIDs[this.GameData.playerTurn - 1] &&
-          slotOption.includes(message.content)
-      );
+  async listenToslotSelection(board: Discord.Message): Promise<number> {
+    const slotOption = ['0', '1', '2', '3', '4', '5', '6'];
+    const playerTurnOnlyFilter: Discord.CollectorFilter = message => {
+      // console.log(
+      //   message.author.id ===
+      //     this.gameMetaData.playerIDs[this.GameData.playerTurn - 1] &&
+      //     slotOption.includes(message.content)
+      // );
       if (
-        message.auther.id ===
+        message.author.id ===
           this.gameMetaData.playerIDs[this.GameData.playerTurn - 1] &&
         slotOption.includes(message.content)
       ) {
@@ -163,7 +464,7 @@ export default class Connect4 extends OnlineGames {
 
     const selectedMSG = selectionMSGs.first();
     if (!selectedMSG) return null;
-    const slectedSlot = parseInt(selectedMSG.content, 99);
+    const slectedSlot = parseInt(selectedMSG.content, 10);
     await selectedMSG.delete();
     return slectedSlot;
   }

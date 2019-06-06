@@ -295,6 +295,46 @@ export abstract class OnlineGames {
       });
   }
   /**
+   * added coins to the player account on the database
+   * @param coins amount to add to the players accoun
+   * @param playerID the players id
+   * @param guildID the guild that they are in
+   */
+  async rewardPlayer(
+    coinsToAdd: number,
+    userID: string,
+    won?: boolean,
+    guildID: string = this.msg.guild.id
+  ) {
+    try {
+      won
+        ? await UserMD.findOneAndUpdate(
+            { userID, guildID },
+            {
+              $inc: {
+                coins: coinsToAdd,
+                'playerStat.wins': 1,
+                'playerStat.loses': 1,
+                'level.xp': 3 * coinsToAdd,
+              },
+            }
+          ).exec()
+        : await UserMD.findOneAndUpdate(
+            { userID, guildID },
+            {
+              $set: { 'playerStat.loses': 0 },
+              $inc: {
+                coins: coinsToAdd,
+                'playerStat.loses': 1,
+                'level.xp': 3 * coinsToAdd,
+              },
+            }
+          ).exec();
+    } catch (e) {
+      console.log(e);
+    }
+  }
+  /**
    * This function should be ran at the end of each online game.
    * - Deletes the game data on the database
    * - removes each player from the game + sets their status to not in a game.

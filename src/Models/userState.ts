@@ -1,7 +1,12 @@
 import { Schema, model, Model, Document } from 'mongoose';
 
 const userSchema = new Schema({
-  userID: { type: String, unique: true, required: true, index: true },
+  userID: {
+    type: String,
+    // unique: true,
+    required: true,
+    index: true,
+  },
   guildID: { type: String, required: true, index: true },
   playerStat: {
     wins: { type: Number, default: 0 },
