@@ -314,7 +314,7 @@ export abstract class OnlineGames {
               $inc: {
                 coins: coinsToAdd,
                 'playerStat.wins': 1,
-                'playerStat.loses': 1,
+                'playerStat.streak': 1,
                 'level.xp': 3 * coinsToAdd,
               },
             }
@@ -322,7 +322,7 @@ export abstract class OnlineGames {
         : await UserMD.findOneAndUpdate(
             { userID, guildID },
             {
-              $set: { 'playerStat.loses': 0 },
+              $set: { 'playerStat.streak': 0 },
               $inc: {
                 coins: coinsToAdd,
                 'playerStat.loses': 1,
