@@ -37,13 +37,16 @@ export async function getMentionedPlayers(msg: Discord.Message) {
   for (let i = 0; i < msg.mentions.users.size; i++) {
     let user = usersIter.next();
     // @ts-ignore
-    const userData: IUserState = await UserMD.byUserIDnGuildID(
-      `${user.value.id}`,
-      msg.guild.id
+    const userData: IUserState = await UserMD.byUserID(
+      `${user.value.id}`
     ).exec();
 
     if (!userData) {
       await msg.reply(`The user ${user.value} you mentioned isnt in the DB`);
+    } else if (userData.serverAccounts.get(msg.guild.id) === undefined) {
+      await msg.reply(
+        `The user ${user.value} you mentioned isnt on the server!`
+      );
     } else if (userData.ingame.isInGame === true) {
       const theyAreAlreadyInAGameMSG = new Discord.RichEmbed()
         .setColor('#F44336')
@@ -74,7 +77,6 @@ export async function getMentionedPlayers(msg: Discord.Message) {
       .setDescription('You cannot tag yourself!');
 
     await msg.channel.send(noTagSelf);
-
 
     return;
   } else {

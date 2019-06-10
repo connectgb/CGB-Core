@@ -18,10 +18,7 @@ export default class LeaveGame {
         .setColor('#008080')
         .addField('GameID', userData.ingame.gameID);
       if (userData.ingame.isInGame === true) {
-        OnlineGames.updatePlayerStatusLeaveGame(
-          message.author.id,
-          message.guild.id
-        );
+        OnlineGames.updatePlayerStatusLeaveGame(message.author.id);
         leftGameMSG.setDescription('You Left The Game!');
       } else {
         leftGameMSG.setDescription('Your not part of a game!');

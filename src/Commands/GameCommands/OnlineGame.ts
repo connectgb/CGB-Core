@@ -246,7 +246,6 @@ export abstract class OnlineGames {
     await UserMD.updateMany(
       {
         userID: this.gameMetaData.playerIDs,
-        guildID: this.gameMetaData.guildID,
       },
       {
         ingame: {
@@ -270,10 +269,10 @@ export abstract class OnlineGames {
    * @param userID the user id to format game status
    * @param guildID the guild id that the user is in
    */
-  static async updatePlayerStatusLeaveGame(userID: string, guildID: string) {
+  static async updatePlayerStatusLeaveGame(userID: string) {
     // updating each player status to in game
     // @ts-ignore
-    await UserMD.byUserID(
+    await UserMD.update(
       {
         userID,
       },
@@ -309,24 +308,26 @@ export abstract class OnlineGames {
     try {
       won
         ? await UserMD.findOneAndUpdate(
-            { userID, guildID },
+            { userID },
             {
               $inc: {
-                coins: coinsToAdd,
-                'playerStat.wins': 1,
-                'playerStat.streak': 1,
-                'level.xp': 3 * coinsToAdd,
+                ['serverAccounts.' + guildID + 'coins']: coinsToAdd,
+                ['serverAccounts.' + guildID + 'playerStat.wins']: 1,
+                ['serverAccounts.' + guildID + 'playerStat.streak']: 1,
+                ['serverAccounts.' + guildID + 'level.xp']: 3 * coinsToAdd,
               },
             }
           ).exec()
         : await UserMD.findOneAndUpdate(
-            { userID, guildID },
+            { userID },
             {
-              $set: { 'playerStat.streak': 0 },
+              $set: {
+                ['serverAccounts.' + guildID]: { 'playerStat.streak': 0 },
+              },
               $inc: {
-                coins: coinsToAdd,
-                'playerStat.loses': 1,
-                'level.xp': 3 * coinsToAdd,
+                ['serverAccounts.' + guildID + 'coins']: coinsToAdd,
+                ['serverAccounts.' + guildID + 'playerStat.loses']: 1,
+                ['serverAccounts.' + guildID + 'level.xp']: 3 * coinsToAdd,
               },
             }
           ).exec();
@@ -342,13 +343,9 @@ export abstract class OnlineGames {
   async cleanUpTheGameData() {
     try {
       //@ts-ignore
-      const GameDataDB = GameMD.byGameID();
       await GameMD.deleteOne({ 'meta.gameID': this.gameMetaData.gameID });
       this.gameMetaData.playerIDs.forEach(playerID => {
-        OnlineGames.updatePlayerStatusLeaveGame(
-          playerID as string,
-          this.gameMetaData.guildID
-        );
+        OnlineGames.updatePlayerStatusLeaveGame(playerID as string);
       });
 
       const gameClosedeMSG = new Discord.RichEmbed()
