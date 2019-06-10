@@ -19,9 +19,8 @@ botClient.on('message', receivedMessage => {
     }
     // check if users info is in the DB else create it
     //@ts-ignore
-    UserMD.byUserIDnGuildID(
+    UserMD.byUserID(
       receivedMessage.author.id,
-      receivedMessage.guild.id,
       (err: any, userData: IUserState) => {
         if (!userData) {
           createNewUserProfile(
@@ -29,7 +28,17 @@ botClient.on('message', receivedMessage => {
             receivedMessage.channel,
             receivedMessage.guild.id
           );
+
           return true;
+        } else if (
+          userData.serverAccounts.get(receivedMessage.guild.id) === undefined
+        ) {
+          createNewAccount(
+            userData,
+            receivedMessage.author,
+            receivedMessage.channel,
+            receivedMessage.guild.id
+          );
         } else {
           let commands = receivedMessage.content
             .substr(process.env.BOT_PREFIX.length)
@@ -71,6 +80,51 @@ function noCommandsFound(Msg: Discord.Message, triedCmd: string) {
     .addField('Error:', `The command "${triedCmd}" does not exist!`);
   Msg.channel.send(primaryCmdErrorMSG);
 }
+async function createNewAccount(
+  userData: IUserState,
+  userDiscordInfo: Discord.User,
+  discordChannel:
+    | Discord.TextChannel
+    | Discord.DMChannel
+    | Discord.GroupDMChannel,
+  guildID: string
+) {
+  if (userData._sub.ConnectedLevel > 0 || userData.serverAccounts.size === 0) {
+    UserMD.findOneAndUpdate(
+      { userID: userDiscordInfo.id },
+      {
+        $set: {
+          ['serverAccounts.' + guildID]: { guildID },
+        },
+      }
+    )
+      .exec()
+      .then(next => {
+        const newAccountMember = new Discord.RichEmbed()
+          .setColor('#60BE82')
+          .setAuthor(`${userDiscordInfo.tag}`)
+          .setTitle('New Account Created!')
+          .setDescription(
+            'You are now part of the system. Now you have access to games on this server! Have Fun Winning!'
+          );
+        discordChannel.send(newAccountMember);
+      });
+  } else {
+    const newAccountmemberFailedNotAPrtron = new Discord.RichEmbed()
+      .setColor('#F44336')
+      .setAuthor(`${userDiscordInfo.tag}`)
+      .setTitle('New Account?')
+      .setDescription(
+        'It looks like you want to create another account on another server. You have no subscriptions to allow you to do this!'
+      )
+      .addField('solution 1 (recommended)', 'Become a Patron:  ')
+      .addField(
+        'solution 2',
+        '~!delAccount - This will delete the account thatthe current server is using (if any)'
+      );
+    discordChannel.send(newAccountmemberFailedNotAPrtron);
+  }
+}
 async function createNewUserProfile(
   userDiscordInfo: Discord.User,
   discordChannel:
@@ -80,17 +134,25 @@ async function createNewUserProfile(
   guildID: string
 ) {
   // console.log('user not found in DB');
-  const newUser = new UserMD({ userID: userDiscordInfo.id, guildID });
+  const newUser = new UserMD({
+    userID: userDiscordInfo.id,
+    serverAccounts: {
+      [guildID]: { guildID },
+    },
+  });
   newUser
     .save()
     .then(data => {
       // new user created success message
       const successfulNewAccountMSG = new Discord.RichEmbed()
-        .setColor('##60BE82')
+        .setColor('#60BE82')
         .setAuthor(`${userDiscordInfo.tag}`)
         .setTitle('New Account Created!')
         .setDescription(
-          'You are now part of the system. Now you have full access to all the games on the platform! Have Fun Winning!'
+          'You are now part of the system. Now you have access to games on this server! Have Fun Winning!'
+        )
+        .setFooter(
+          'For more features and exclusive bonuses become a patron!: '
         );
       discordChannel.send(successfulNewAccountMSG);
     })

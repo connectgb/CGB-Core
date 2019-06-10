@@ -1,12 +1,6 @@
 import { Schema, model, Model, Document } from 'mongoose';
 
-const userSchema = new Schema({
-  userID: {
-    type: String,
-    // unique: true,
-    required: true,
-    index: true,
-  },
+const userServerDataSchema = new Schema({
   guildID: { type: String, required: true, index: true },
   playerStat: {
     wins: { type: Number, default: 0 },
@@ -19,6 +13,20 @@ const userSchema = new Schema({
     current: { type: Number, default: 1 },
     xp: { type: Number, default: 0 },
   },
+});
+const userSchema = new Schema({
+  userID: {
+    type: String,
+    unique: true,
+    required: true,
+    index: true,
+  },
+  _sub: {
+    ConnectedLevel: { type: Number, default: 0 },
+    expireDate: { type: Date, default: null },
+    accountsLimmit: { type: Number, default: 1 },
+  },
+  serverAccounts: { type: Map, of: userServerDataSchema },
   ingame: {
     gameID: { type: Schema.Types.ObjectId, ref: 'Game', default: null },
     isInGame: { type: Boolean, default: false },
@@ -37,8 +45,7 @@ export const userDiscordSchema = new Schema(
   { _id: false }
 );
 
-export interface IUserState {
-  userID: string;
+export interface IUserAccountState {
   level: {
     current: number;
     xp: number;
@@ -50,6 +57,15 @@ export interface IUserState {
     joinedDate: Date;
   };
   coins: number;
+}
+export interface IUserState {
+  userID: string;
+  _sub: {
+    ConnectedLevel: Number;
+    expireDate: Date;
+    accountsLimmit: Number;
+  };
+  serverAccounts: Map<String, IUserAccountState>;
   ingame: {
     gameID: string;
     isInGame: boolean;
@@ -59,12 +75,8 @@ export interface IUserState {
 interface IUserStateDoc extends Document, IUserState {}
 
 // all instances will have acces to this when doing UserMD.findOne().byUserID('usersID')
-userSchema.statics.byUserIDnGuildID = function(
-  userID: string,
-  guildID: string,
-  cb: void
-) {
-  return this.findOne({ userID, guildID }, cb);
+userSchema.statics.byUserID = function(userID: string, cb: void) {
+  return this.findOne({ userID }, cb);
 };
 
 export const UserMD: Model<IUserStateDoc> = model('User', userSchema, 'Users');

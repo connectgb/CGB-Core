@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 // console.log(connectionUri);
 export class Database {
-  mongodbDatabase = 'ConnectGamesDev';
+  mongodbDatabase = 'ConnectGames-Developer';
   constructor() {
     this._connect();
   }
@@ -15,6 +15,7 @@ export class Database {
           this.mongodbDatabase
         }?retryWrites=true`,
         {
+          useFindAndModify: false,
           useNewUrlParser: true,
         }
       )

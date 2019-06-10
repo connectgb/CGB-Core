@@ -9,7 +9,7 @@ export default class LeaveGame {
     cmdArguments: Array<string>
   ) {
     //@ts-ignore
-    UserMD.byUserIDnGuildID(message.author.id, message.guild.id, function(
+    UserMD.byUserID(message.author.id, function(
       err: any,
       userData: IUserState
     ) {

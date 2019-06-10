@@ -116,7 +116,7 @@ export abstract class OnlineGames {
     );
     ConfirmationMSG.setFooter(awitingForString);
 
-    let ConfirmationMSGSent: Discord.Message = (await this.msg.channel.send(
+    let ConfirmationMSGSent = (await this.msg.channel.send(
       ConfirmationMSG
     )) as Discord.Message;
 
@@ -272,10 +272,10 @@ export abstract class OnlineGames {
    */
   static async updatePlayerStatusLeaveGame(userID: string, guildID: string) {
     // updating each player status to in game
-    await UserMD.updateMany(
+    // @ts-ignore
+    await UserMD.byUserID(
       {
         userID,
-        guildID,
       },
       {
         ingame: {
@@ -286,10 +286,10 @@ export abstract class OnlineGames {
       }
     )
       .exec()
-      .then(updatedData => {
+      .then((updatedData: any) => {
         // console.log(updatedData);
       })
-      .catch(e => {
+      .catch((e: any) => {
         console.log('error whilst updating user to lobby!');
         console.log(e);
       });
