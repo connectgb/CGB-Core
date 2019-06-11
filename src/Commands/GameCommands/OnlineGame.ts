@@ -7,7 +7,7 @@ import {
 import { UserMD, IUserState } from '../../Models/userState';
 
 import { IGameMetaData, IGameMetaInfo, GameMD } from '../../Models/gameState';
-import mongoose from 'mongoose';
+import mongoose, { Query } from 'mongoose';
 
 //@ts-ignore
 export abstract class OnlineGames {
@@ -272,7 +272,7 @@ export abstract class OnlineGames {
   static async updatePlayerStatusLeaveGame(userID: string) {
     // updating each player status to in game
     // @ts-ignore
-    await UserMD.update(
+    await UserMD.findOneAndUpdate(
       {
         userID,
       },
@@ -302,35 +302,36 @@ export abstract class OnlineGames {
   async rewardPlayer(
     coinsToAdd: number,
     userID: string,
-    won?: boolean,
+    won: boolean,
     guildID: string = this.msg.guild.id
   ) {
     try {
-      won
-        ? await UserMD.findOneAndUpdate(
-            { userID },
-            {
-              $inc: {
-                ['serverAccounts.' + guildID + 'coins']: coinsToAdd,
-                ['serverAccounts.' + guildID + 'playerStat.wins']: 1,
-                ['serverAccounts.' + guildID + 'playerStat.streak']: 1,
-                ['serverAccounts.' + guildID + 'level.xp']: 3 * coinsToAdd,
-              },
-            }
-          ).exec()
-        : await UserMD.findOneAndUpdate(
-            { userID },
-            {
-              $set: {
-                ['serverAccounts.' + guildID]: { 'playerStat.streak': 0 },
-              },
-              $inc: {
-                ['serverAccounts.' + guildID + 'coins']: coinsToAdd,
-                ['serverAccounts.' + guildID + 'playerStat.loses']: 1,
-                ['serverAccounts.' + guildID + 'level.xp']: 3 * coinsToAdd,
-              },
-            }
-          ).exec();
+      const rewardUpdates = won
+        ? {
+            $inc: {
+              ['serverAccounts.' + guildID + '.coins']: coinsToAdd,
+              ['serverAccounts.' + guildID + '.playerStat.wins']: 1,
+              ['serverAccounts.' + guildID + '.playerStat.streak']: 1,
+              ['serverAccounts.' + guildID + '.level.xp']: 3 * coinsToAdd,
+            },
+          }
+        : {
+            ['serverAccounts.' + guildID + '.playerStat.streak']: 0,
+            $inc: {
+              ['serverAccounts.' + guildID + '.coins']: coinsToAdd,
+              ['serverAccounts.' + guildID + '.playerStat.loses']: 1,
+              ['serverAccounts.' + guildID + '.level.xp']: 3 * coinsToAdd,
+            },
+          };
+
+      const E = await UserMD.findOneAndUpdate(
+        {
+          userID,
+        },
+        rewardUpdates
+      ).exec();
+      console.log(E);
+      console.log('looting');
     } catch (e) {
       console.log(e);
     }

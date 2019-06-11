@@ -57,6 +57,7 @@ export interface IUserAccountState {
     joinedDate: Date;
   };
   coins: number;
+  guildID: string;
 }
 export interface IUserState {
   userID: string;
@@ -65,7 +66,7 @@ export interface IUserState {
     expireDate: Date;
     accountsLimmit: Number;
   };
-  serverAccounts: Map<String, IUserAccountState>;
+  serverAccounts: Map<string, IUserAccountState>;
   ingame: {
     gameID: string;
     isInGame: boolean;

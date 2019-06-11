@@ -117,10 +117,16 @@ async function createNewAccount(
       .setDescription(
         'It looks like you want to create another account on another server. You have no subscriptions to allow you to do this!'
       )
-      .addField('solution 1 (recommended)', 'Become a Patron:  ')
+      .addField(
+        'solution 1 (recommended)',
+        'Become a Patron: https://www.patreon.com/ConnectGames '
+      )
       .addField(
         'solution 2',
         '~!delAccount - This will delete the account thatthe current server is using (if any)'
+      )
+      .setFooter(
+        'For more features and exclusive bonuses become a patron!: https://www.patreon.com/ConnectGames '
       );
     discordChannel.send(newAccountmemberFailedNotAPrtron);
   }
@@ -152,7 +158,7 @@ async function createNewUserProfile(
           'You are now part of the system. Now you have access to games on this server! Have Fun Winning!'
         )
         .setFooter(
-          'For more features and exclusive bonuses become a patron!: '
+          'For more features and exclusive bonuses become a patron!: https://www.patreon.com/ConnectGames '
         );
       discordChannel.send(successfulNewAccountMSG);
     })

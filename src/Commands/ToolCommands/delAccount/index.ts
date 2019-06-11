@@ -82,7 +82,9 @@ export default class LeaveGame {
         } else {
           message.channel.send('Confirmed!');
           UserMD.findOneAndUpdate(
-            { userID: message.author.id },
+            {
+              userID: message.author.id,
+            },
             {
               $unset: { ['serverAccounts.' + message.guild.id]: {} },
             }

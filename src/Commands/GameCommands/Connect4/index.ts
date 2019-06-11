@@ -53,7 +53,7 @@ export default class Connect4 extends OnlineGames {
           if (ready) {
             this.GameLifeCicle()
               .then(async end => {
-                console.log('Game Loot!');
+                // console.log('Game Loot!');
                 if (this.isGameADraw()) {
                   await this.rewardPlayer(
                     2,
@@ -84,7 +84,7 @@ export default class Connect4 extends OnlineGames {
                 console.log(e);
               })
               .finally(() => {
-                console.log('GameClean up!');
+                // console.log('GameClean up!');
                 this.cleanUpTheGameData();
               });
           }
@@ -94,7 +94,7 @@ export default class Connect4 extends OnlineGames {
     });
   }
   async GameLifeCicle() {
-    console.log('Game Loop');
+    // console.log('Game Loop');
     this.GameData.onGoing = true;
     while (this.GameData.onGoing) {
       await this.takeTurn(this.GameData.playerTurn).then(async next => {
