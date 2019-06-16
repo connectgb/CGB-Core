@@ -20,8 +20,8 @@
     "url": "https://github.com/isaac-diaby/Discord_MiniGames/issues"
   },
   "dependencies": {
-    "discord.js": "^11.5.0",
-    "mongoose": "^5.5.10"
+    "discord.js": "11.5.1",
+    "mongoose": "5.6.0"
   },
   "devDependencies": {
     "@types/mongoose": "^5.3.26",

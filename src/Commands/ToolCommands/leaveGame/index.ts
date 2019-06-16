@@ -1,13 +1,15 @@
 import * as Discord from 'discord.js';
 import { OnlineGames } from '../../GameCommands/OnlineGame';
 import { UserMD, IUserState } from '../../../Models/userState';
+import { DiscordCommand } from '../../DiscordCommand';
 
-export default class LeaveGame {
+export default class LeaveGameCommand extends DiscordCommand {
   constructor(
     client: Discord.Client,
     message: Discord.Message,
     cmdArguments: Array<string>
   ) {
+    super(client, message, cmdArguments);
     //@ts-ignore
     UserMD.byUserID(message.author.id, function(
       err: any,

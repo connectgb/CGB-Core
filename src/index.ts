@@ -6,71 +6,84 @@ import { UserMD, IUserState } from './Models/userState';
 const botClient = new Discord.Client();
 const DB = new Database();
 
+const mainGuildData = {
+  id: '566982444822036500',
+  patronReward: {
+    channel: '588462707594887185',
+    message: '589435499496603648',
+  },
+};
 botClient.on('ready', () => {
-  botClient.user.setActivity('Discord Mini Games');
+  botClient.user.setActivity('Discord Mini Games | ~help ');
   console.log(`${botClient.user.username} is online`);
 });
 
 botClient.on('message', receivedMessage => {
-  if (receivedMessage.content.startsWith(process.env.BOT_PREFIX)) {
-    // Prevent bot from responding to its own messages
-    if (receivedMessage.author === botClient.user) {
-      return;
-    }
-    // check if users info is in the DB else create it
-    //@ts-ignore
-    UserMD.byUserID(
-      receivedMessage.author.id,
-      (err: any, userData: IUserState) => {
-        if (!userData) {
-          createNewUserProfile(
-            receivedMessage.author,
-            receivedMessage.channel,
-            receivedMessage.guild.id
-          );
+  // console.log(receivedMessage);
+  if (!receivedMessage.content.startsWith(process.env.BOT_PREFIX)) {
+    return;
+  }
+  // Prevent bot from responding to its own messages
+  if (receivedMessage.author === botClient.user) {
+    return;
+  }
+  // check if users info is in the DB else create it
+  //@ts-ignore
+  UserMD.byUserID(
+    receivedMessage.author.id,
+    (err: any, userData: IUserState) => {
+      if (!userData) {
+        createNewUserProfile(
+          receivedMessage.author,
+          receivedMessage.channel,
+          receivedMessage.guild.id
+        );
 
-          return true;
-        } else if (
-          userData.serverAccounts.get(receivedMessage.guild.id) === undefined
-        ) {
-          createNewAccount(
-            userData,
-            receivedMessage.author,
-            receivedMessage.channel,
-            receivedMessage.guild.id
-          );
-        } else {
-          let commands = receivedMessage.content
-            .substr(process.env.BOT_PREFIX.length)
-            .split(' ');
-          let primaryCmd = commands[0];
-          let argsCmd = commands.slice(1);
-          switch (userData.ingame.isInGame && primaryCmd !== '!leaveGame') {
-            case true:
-              const youAreAlreadyInAGameMSG = new Discord.RichEmbed()
-                .setColor('#F44336')
-                .setAuthor(`${receivedMessage.author.tag}`)
-                .setDescription(
-                  `You are already in a game, you cant run any other commands untill your current game is over`
-                )
-                .addField('solution:', `Run ~!leaveGame to forfit the game`);
-              receivedMessage.channel.send(youAreAlreadyInAGameMSG);
-              break;
-            default:
-              // parsing the command sent to the bot to main command and arguments
+        return true;
+      } else if (
+        userData.serverAccounts.get(receivedMessage.guild.id) === undefined
+      ) {
+        createNewAccount(
+          userData,
+          receivedMessage.author,
+          receivedMessage.channel,
+          receivedMessage.guild.id
+        );
+      } else {
+        let commands = receivedMessage.content
+          .toLowerCase()
+          .substr(process.env.BOT_PREFIX.length)
+          .split(' ');
+        let primaryCmd = commands[0];
+        let argsCmd = commands.slice(1);
+        switch (userData.ingame.isInGame && primaryCmd !== '!leaveGame') {
+          case true:
+            const youAreAlreadyInAGameMSG = new Discord.RichEmbed()
+              .setColor('#F44336')
+              .setAuthor(`${receivedMessage.author.tag}`)
+              .setDescription(
+                `You are already in a game, you cant run any other commands untill your current game is over`
+              )
+              .addField('solution:', `Run ~!leaveGame to for-fit the game`);
+            receivedMessage.channel.send(youAreAlreadyInAGameMSG);
+            break;
+          default:
+            // parsing the command sent to the bot to main command and arguments
+            let gameCommandClass = GameCommandsOBJ[primaryCmd];
 
-              let gameCommandClass = GameCommandsOBJ[primaryCmd];
-              gameCommandClass
-                ? new gameCommandClass(botClient, receivedMessage, argsCmd)
-                : noCommandsFound(receivedMessage, primaryCmd);
-              //receivedMessage.delete();
+            if (gameCommandClass!.isPrime && userData._sub.ConnectedLevel > 1) {
+            } else if (gameCommandClass.execute) {
+              new gameCommandClass.execute(botClient, receivedMessage, argsCmd);
+            } else {
+              noCommandsFound(receivedMessage, primaryCmd);
+            }
+            //receivedMessage.delete();
 
-              break;
-          }
+            break;
         }
       }
-    );
-  }
+    }
+  );
 });
 
 function noCommandsFound(Msg: Discord.Message, triedCmd: string) {
@@ -89,7 +102,11 @@ async function createNewAccount(
     | Discord.GroupDMChannel,
   guildID: string
 ) {
-  if (userData._sub.ConnectedLevel > 0 || userData.serverAccounts.size === 0) {
+  if (
+    (userData._sub.ConnectedLevel > 0 &&
+      userData._sub.accountsLimmit < userData.serverAccounts.size) ||
+    userData.serverAccounts.size === 0
+  ) {
     UserMD.findOneAndUpdate(
       { userID: userDiscordInfo.id },
       {
@@ -119,11 +136,11 @@ async function createNewAccount(
       )
       .addField(
         'solution 1 (recommended)',
-        'Become a Patron: https://www.patreon.com/ConnectGames '
+        'Become a Patron: https://www.patreon.com/ConnectGames then use the ~claim perks command to activate your perks!'
       )
       .addField(
         'solution 2',
-        '~!delAccount - This will delete the account thatthe current server is using (if any)'
+        '~!delete account - This will delete the account that the current server is using (if any)'
       )
       .setFooter(
         'For more features and exclusive bonuses become a patron!: https://www.patreon.com/ConnectGames '

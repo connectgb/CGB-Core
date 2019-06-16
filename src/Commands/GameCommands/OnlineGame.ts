@@ -1,19 +1,17 @@
 import * as Discord from 'discord.js';
+import { DiscordCommand } from '../DiscordCommand';
 import {
   allPlayerTaggedString,
   getMentionedPlayers,
   uuidv4,
 } from './../functions/HelperFunctions';
 import { UserMD, IUserState } from '../../Models/userState';
-
 import { IGameMetaData, IGameMetaInfo, GameMD } from '../../Models/gameState';
 import mongoose, { Query } from 'mongoose';
+import { createSecurePair } from 'tls';
 
 //@ts-ignore
-export abstract class OnlineGames {
-  botClient: Discord.Client;
-  msg: Discord.Message;
-  args: Array<string>;
+export abstract class OnlineGames extends DiscordCommand {
   hUser: Discord.GuildMember;
   metaConfig: IGameMetaInfo;
   gameMetaData: IGameMetaData;
@@ -24,10 +22,7 @@ export abstract class OnlineGames {
     message: Discord.Message,
     cmdArguments: Array<string>
   ) {
-    // init variables
-    this.botClient = client;
-    this.msg = message;
-    this.args = cmdArguments;
+    super(client, message, cmdArguments);
     this.hUser = message.guild.member(message.author);
   }
 
@@ -43,9 +38,9 @@ export abstract class OnlineGames {
    *
    */
   async GameConfirmationStage() {
-    const acceptEmoji = `🔵`,
-      rejectEmoji = `🔴`;
-    //'🔵'; '✔️'; ':heavy_check_mark:️'
+    const acceptEmoji = `🔥`,
+      rejectEmoji = `❌`;
+    //'🔵'; '✔'; ':heavy_check_mark:️'
     //'🔴'; '❌';':x:'
 
     this.gameMetaData = {
@@ -103,7 +98,7 @@ export abstract class OnlineGames {
     // custume 2 player games
     if (this.gameMetaData.players.length === 2)
       ConfirmationMSG.setAuthor(
-        `${this.hUser.user.username} ---VS--- ${
+        `${this.hUser.user.username} -🆚- ${
           this.gameMetaData.players[1].username
         }`
       )
@@ -324,14 +319,14 @@ export abstract class OnlineGames {
             },
           };
 
-      const E = await UserMD.findOneAndUpdate(
+      await UserMD.findOneAndUpdate(
         {
           userID,
         },
         rewardUpdates
       ).exec();
-      console.log(E);
-      console.log('looting');
+      // console.log(E);
+      // console.log('looting');
     } catch (e) {
       console.log(e);
     }

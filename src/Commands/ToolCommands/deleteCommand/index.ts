@@ -5,47 +5,52 @@ import {
   IUserState,
   IUserAccountState,
 } from '../../../Models/userState';
+import { DiscordCommand } from '../../DiscordCommand';
 
-export default class LeaveGame {
+export default class DeleteCommand extends DiscordCommand {
+  userAccountData: IUserAccountState;
+  userData: IUserState;
   constructor(
     client: Discord.Client,
     message: Discord.Message,
     cmdArguments: Array<string>
   ) {
+    super(client, message, cmdArguments);
     //@ts-ignore
     UserMD.byUserID(message.author.id).then(async (userData: IUserState) => {
       // console.log(userData);
-      const userAccountData: IUserAccountState = userData.serverAccounts.get(
-        message.guild.id
-      );
-      const acceptEmoji = `🔵`;
-      const ConfirmationMSG = new Discord.RichEmbed()
-        .setAuthor(message.author.username)
-        .setColor('#F44336')
-        .setDescription('Are You Sure You Want To Delete This Account?')
-        .addField('Level', userAccountData.level.current)
-        .addField('Experience', userAccountData.level.xp)
-        .addField('Coins', userAccountData.coins)
-        .addField('Wins', userAccountData.playerStat.wins)
-        .addField('Loses', userAccountData.playerStat.loses)
-        .addField('Current Streak', userAccountData.playerStat.streak)
-        .addField('Joined data', userAccountData.playerStat.joinedDate)
-        .setFooter(`please confirm this action by adding ${acceptEmoji}`);
+      this.userAccountData = userData.serverAccounts.get(message.guild.id);
+      this.userData = userData;
 
-      let ConfirmationMSGSent = (await message.channel.send(
-        ConfirmationMSG
-      )) as Discord.Message;
-
-      await this.deleteAccountConformation(message, ConfirmationMSGSent);
-      await ConfirmationMSGSent.delete();
+      switch (cmdArguments[0]) {
+        case 'account':
+          await this.deleteAccountConformation(message);
+          break;
+        default:
+          message.reply('!delete <mode>    modes = account');
+      }
     });
   }
-  async deleteAccountConformation(
-    message: Discord.Message,
-    sentConfMSG: Discord.Message
-  ) {
+  async deleteAccountConformation(message: Discord.Message) {
     const acceptEmoji = `🔵`,
       rejectEmoji = `🔴`;
+
+    const ConfirmationMSG = new Discord.RichEmbed()
+      .setAuthor(message.author.username)
+      .setColor('#F44336')
+      .setDescription('Are You Sure You Want To Delete This Account?')
+      .addField('Level', this.userAccountData.level.current)
+      .addField('Experience', this.userAccountData.level.xp)
+      .addField('Coins', this.userAccountData.coins)
+      .addField('Wins', this.userAccountData.playerStat.wins)
+      .addField('Loses', this.userAccountData.playerStat.loses)
+      .addField('Current Streak', this.userAccountData.playerStat.streak)
+      .addField('Joined data', this.userAccountData.playerStat.joinedDate)
+      .setFooter(`please confirm this action by adding ${acceptEmoji}`);
+
+    let sentConfMSG = (await message.channel.send(
+      ConfirmationMSG
+    )) as Discord.Message;
     // waits for the reactions to be added
     await Promise.all([
       sentConfMSG.react(acceptEmoji),
@@ -78,9 +83,7 @@ export default class LeaveGame {
           reactionResults.get(acceptEmoji) == null ||
           reactionResults.get(acceptEmoji).count - 1 !== 1
         ) {
-          message.channel.send('Aborted!');
         } else {
-          message.channel.send('Confirmed!');
           UserMD.findOneAndUpdate(
             {
               userID: message.author.id,
@@ -88,14 +91,15 @@ export default class LeaveGame {
             {
               $unset: { ['serverAccounts.' + message.guild.id]: {} },
             }
-          ).then(next => {
-            message.channel.send('Account Deleted');
+          ).then(async next => {
+            await message.channel.send('Account Deleted');
           });
         }
       })
       .catch((e: any) => {
         console.log('ERROR: listening to players accept/reject reaction');
         console.log(e);
-      });
+      })
+      .finally(() => sentConfMSG.delete());
   }
 }
