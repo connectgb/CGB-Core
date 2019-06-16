@@ -4,12 +4,12 @@
   "scope": "connectgames",
   "regions": ["lhr", "bru"],
   "builds": [{ "src": "src/**/*.ts", "use": "@now/node" }],
-   "build": {
+  "build": {
     "env": {
       "DB_PASSWORD": "u25%217KQ6be%40D",
       "BOT_PREFIX": "~",
       "BOT_AUTHTOKEN": "NTY0ODQwNjM5ODE3MDU2Mjky.XPu8MA.QVKvWyduFKuX8_aJqOEWxp8REC8",
       "PRODUCTION": "True"
     }
-   }
+  }
 }
