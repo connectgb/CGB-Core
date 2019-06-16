@@ -1,7 +1,12 @@
 {
+  "name": "Connect Games Production",
   "version": 2,
-  "name": "connect Games Production",
   "scope": "connectgames",
-  "builds": [{ "src": "src/*.ts", "use": "@now/node" }],
-  "regions": ["lhr", "bru"]
+  "regions": ["lhr", "bru"],
+  "builds": [{ "src": "src/**/*.ts", "use": "@now/node" }],
+  "env": {
+    "DB_PASSWORD": "u25%217KQ6be%40D",
+    "BOT_PREFIX": "~",
+    "BOT_AUTHTOKEN": "NTY0ODQwNjM5ODE3MDU2Mjky.XPu8MA.QVKvWyduFKuX8_aJqOEWxp8REC8"
+  }
 }
