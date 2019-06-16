@@ -4,7 +4,7 @@
   "scope": "connectgames",
   "regions": ["lhr", "bru"],
   "builds": [{ "src": "src/**/*.ts", "use": "@now/node" }],
-  "routes": [{ "src": "/", "dest": "src/index.ts" }],
+  "routes": [{ "src": "/", "dest": "src/index.ts",  "status": 201, }],
   "env": {
     "DB_PASSWORD": "u25%217KQ6be%40D",
     "BOT_PREFIX": "~",
