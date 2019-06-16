@@ -1,3 +1,7 @@
 {
-  "name": "connect Games"
+  "version": 2,
+  "name": "connect Games Production",
+  "scope": "connectgames",
+  "builds": [{ "src": "src/*.ts", "use": "@now/node" }],
+  "regions": ["lhr", "bru"]
 }
