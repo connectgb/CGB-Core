@@ -1,9 +1,7 @@
 {
   "name": "discord-mini-games",
   "author": "Isaac Diaby <isaac.diaby.code@gmail.com>",
-  "contributors": [
-    "Gregor Christie <techattax100@gmail.com>"
-  ],
+  "contributors": ["Gregor Christie <techattax100@gmail.com>"],
   "license": "MIT",
   "version": "1.0.0",
   "description": "Paid Discord bot, allwos you to play chat games, trade and much more!",
@@ -21,9 +19,11 @@
   },
   "dependencies": {
     "discord.js": "11.5.1",
+    "express": "4.17.1",
     "mongoose": "5.6.0"
   },
   "devDependencies": {
+    "@types/express": "4.17.0",
     "@types/mongoose": "^5.3.26",
     "@types/node": "^11.13.5",
     "ts-node": "^8.1.0",
@@ -31,8 +31,5 @@
     "typescript": "^3.4.3",
     "nodemon": "1.18.4"
   },
-  "keywords": [
-    "discord bot",
-    "private"
-  ]
+  "keywords": ["discord bot", "private"]
 }
