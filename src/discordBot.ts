@@ -14,19 +14,26 @@ export class DiscordBotRun {
 
   constructor() {
     this.botClient = new Discord.Client();
-    this.botClient.login(process.env.BOT_AUTHTOKEN).then(auth => {
-      this.botClient.on('ready', () => {
-        this.botClient.user.setActivity('Discord Mini Games | ~help ');
-        console.log(`${this.botClient.user.username} is online`);
-      });
+    this.botClient.login(process.env.BOT_AUTHTOKEN);
 
-      this.BotOnlineListen();
+    this.botClient.on('ready', () => {
+      this.botClient.user.setActivity('Discord Mini Games | ~help ');
+      console.log(`${this.botClient.user.username} is online`);
     });
+
+    this.BotOnlineListen();
   }
 
   BotOnlineListen() {
     this.botClient.on('message', receivedMessage => {
-      this.BotmessageFilter(receivedMessage);
+      // console.log(receivedMessage);
+      if (!receivedMessage.content.startsWith(process.env.BOT_PREFIX)) {
+        return;
+      }
+      // Prevent bot from responding to its own messages
+      if (receivedMessage.author === this.botClient.user) {
+        return;
+      }
       // check if users info is in the DB else create it
       //@ts-ignore
       UserMD.byUserID(
@@ -71,8 +78,10 @@ export class DiscordBotRun {
                 // parsing the command sent to the bot to main command and arguments
                 let gameCommandClass = GameCommandsOBJ[primaryCmd];
 
-                if (
-                  // gameCommandClass.isPrime! &&
+                if (!gameCommandClass) {
+                  this.noCommandsFound(receivedMessage, primaryCmd);
+                } else if (
+                  gameCommandClass.isPrime! &&
                   userData._sub.ConnectedLevel < 2
                 ) {
                   // prime commands need connection level greater than 2
@@ -82,8 +91,6 @@ export class DiscordBotRun {
                     receivedMessage,
                     argsCmd
                   );
-                } else {
-                  this.noCommandsFound(receivedMessage, primaryCmd);
                 }
                 //receivedMessage.delete();
 
@@ -94,16 +101,7 @@ export class DiscordBotRun {
       );
     });
   }
-  BotmessageFilter(receivedMessage: Discord.Message) {
-    // console.log(receivedMessage);
-    if (!receivedMessage.content.startsWith(process.env.BOT_PREFIX)) {
-      return;
-    }
-    // Prevent bot from responding to its own messages
-    if (receivedMessage.author === this.botClient.user) {
-      return;
-    }
-  }
+
   noCommandsFound(Msg: Discord.Message, triedCmd: string) {
     const primaryCmdErrorMSG = new Discord.RichEmbed()
       .setColor('#F44336')

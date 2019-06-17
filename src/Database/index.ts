@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 // console.log(connectionUri);
 export class Database {
   mongodbDatabase =
-    process.env.DB_PASSWORD === 'True'
+    process.env.PRODUCTION === 'True'
       ? 'ConnectGames'
       : 'ConnectGames-Developer';
   constructor() {
