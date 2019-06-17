@@ -5,7 +5,6 @@
   "regions": ["lhr", "bru"],
   "builds": [{ "src": "src/**/*.ts", "use": "@now/node" }],
   "routes": [{ "src": "/", "dest": "src/index" }],
-  "build": {},
   "env": {
     "DB_PASSWORD": "u25%217KQ6be%40D",
     "BOT_PREFIX": "~",
