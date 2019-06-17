@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-
 // console.log(connectionUri);
 export class Database {
   mongodbDatabase =

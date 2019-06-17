@@ -1,7 +1,7 @@
 import * as Discord from 'discord.js';
 import { GameCommandsOBJ } from './Commands';
 import { UserMD, IUserState } from './Models/userState';
-
+console.log(process.env.BOT_AUTHTOKEN)
 export class DiscordBotRun {
   mainGuildData = {
     id: '566982444822036500',
