@@ -182,7 +182,7 @@ export default class Connect4 extends OnlineGames {
     }
     // places the slot at the bottom
     this.GameData.gameBoard[this.dropToBottom(slotSelected-1)][
-      slotSelected
+      slotSelected-1
     ] = playerTurn;
 
     // check if player won?
