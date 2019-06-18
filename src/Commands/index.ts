@@ -1,6 +1,6 @@
 import HelpCommand from './ToolCommands/HelpCommand';
 import Connect4 from './GameCommands/Connect4';
-import leaveGameCommand from './ToolCommands/leaveGame';
+import leaveCommand from './ToolCommands/leaveCommand';
 import deleteCommand from './ToolCommands/deleteCommand';
 import ClaimPatreonRewardsCommand from './RewardCommands/Claim';
 
@@ -34,13 +34,13 @@ export const GameCommandsOBJ: { [key: string]: CommandObj } = {
     description: 'Claim your rewards!',
     params: 'claim <Mode?> \nDefault:perks \nOptions:perks',
   },
-  '!leaveGame': {
-    execute: leaveGameCommand,
-    name: 'LeaveGame',
+  '!leave': {
+    execute: leaveCommand,
+    name: 'Leave',
     isPrime: false,
     description:
       'WARNING: removes yourself from the current game that you are in',
-    params: 'leaveGame',
+    params: '!leave <Mode?> \nDefault: game \nOptions: game',
   }, //TODO a class that will make you leave the game and make the opponent automaticly win!
   '!delete': {
     execute: deleteCommand,

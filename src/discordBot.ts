@@ -1,7 +1,7 @@
 import * as Discord from 'discord.js';
 import { GameCommandsOBJ } from './Commands';
 import { UserMD, IUserState } from './Models/userState';
-console.log(process.env.BOT_AUTHTOKEN)
+
 export class DiscordBotRun {
   mainGuildData = {
     id: '566982444822036500',
@@ -63,7 +63,7 @@ export class DiscordBotRun {
               .split(' ');
             let primaryCmd = commands[0];
             let argsCmd = commands.slice(1);
-            switch (userData.ingame.isInGame && primaryCmd !== '!leaveGame') {
+            switch (userData.ingame.isInGame && primaryCmd !== '!leave') {
               case true:
                 const youAreAlreadyInAGameMSG = new Discord.RichEmbed()
                   .setColor('#F44336')
@@ -71,7 +71,7 @@ export class DiscordBotRun {
                   .setDescription(
                     `You are already in a game, you cant run any other commands untill your current game is over`
                   )
-                  .addField('solution:', `Run ~!leaveGame to for-fit the game`);
+                  .addField('solution:', `Run ~!leave game (to for-fit the game)`);
                 receivedMessage.channel.send(youAreAlreadyInAGameMSG);
                 break;
               default:
