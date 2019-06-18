@@ -152,7 +152,7 @@ export default class Connect4 extends OnlineGames {
           `Its ${this.gameMetaData.players[playerTurn - 1].username}'s turn`
         )
         .setDescription(
-          `Listening for a slow number 0-${this.GameData.config.boardLength}`
+          `Listening for a number 1-${this.GameData.config.boardLength+1}`
         )
         .setColor(playerTurn === 1 ? '#4871EA' : '#CF2907')
         .addField('Current Board', currentBoard)
@@ -168,12 +168,12 @@ export default class Connect4 extends OnlineGames {
     const attemptLimit = 3;
     while (
       slotSelected > this.GameData.config.boardLength ||
-      slotSelected < 0 ||
-      (this.isPositionTaken(slotSelected) && attempts < attemptLimit)
+      slotSelected < 1 ||
+      (this.isPositionTaken(slotSelected-1) && attempts < attemptLimit)
     ) {
       sentBoardMSG.channel.send(
-        `${this.gameMetaData.players[playerTurn - 1]} please select a slot 0-${
-          this.GameData.config.boardLength
+        `${this.gameMetaData.players[playerTurn - 1]} please select a slot 1-${
+          this.GameData.config.boardLength+1
         }`
       );
       slotSelected = await this.listenToslotSelection(sentBoardMSG);
@@ -181,7 +181,7 @@ export default class Connect4 extends OnlineGames {
       // console.log(attempts);
     }
     // places the slot at the bottom
-    this.GameData.gameBoard[this.dropToBottom(slotSelected)][
+    this.GameData.gameBoard[this.dropToBottom(slotSelected-1)][
       slotSelected
     ] = playerTurn;
 
@@ -437,7 +437,7 @@ export default class Connect4 extends OnlineGames {
   }
 
   async listenToslotSelection(board: Discord.Message): Promise<number> {
-    const slotOption = ['0', '1', '2', '3', '4', '5', '6'];
+    const slotOption = ['1', '2', '3', '4', '5', '6', '7'];
     const playerTurnOnlyFilter: Discord.CollectorFilter = message => {
       // console.log(
       //   message.author.id ===
