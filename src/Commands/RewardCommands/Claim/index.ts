@@ -80,7 +80,7 @@ export default class ClaimPatreonRewards extends DiscordCommand {
         '_sub.expireDate': new Date(
           new Date().setMonth(new Date().getMonth() + (1 % 12)) // plus one month
         ),
-        '_sub.accountsLimmit': 10 * highestConnectionLevel,
+        '_sub.accountsLimit': 10 * highestConnectionLevel,
       }
     ).then(data =>
       message.reply(`You Now have level ${highestConnectionLevel} connection!`)

@@ -120,8 +120,8 @@ export class DiscordBotRun {
   ) {
     if (
       (userData._sub.ConnectedLevel > 0 &&
-        userData._sub.accountsLimmit < userData.serverAccounts.size) ||
-      userData.serverAccounts.size === 0
+        userData._sub.accountsLimit > userData.serverAccounts.size) ||
+      userData.serverAccounts.size === 0 || guildID == this.mainGuildData.id
     ) {
       UserMD.findOneAndUpdate(
         { userID: userDiscordInfo.id },
