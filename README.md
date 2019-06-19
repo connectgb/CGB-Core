@@ -5,13 +5,6 @@ Join the discord to get a feel for the bot in action!
 
 If you want the bot on your server go [HERE](https://www.patreon.com/ConnectGames). You will need to varify your server later on with an Api key which you can get on the website
 
----
-## Trello Board
-
-Link to the Trello board [click](https://trello.com/b/8F6OHh45/connect-4-discord-bot).
-Feel free to add things into the ideas post.
-
----
 ## Game List
 
 |Primary Command|  Description|
@@ -23,8 +16,10 @@ Feel free to add things into the ideas post.
 
 |Primary Command |  Description|
 |-                |-                                                      |
-|[help](Help)| Show you a list of available commands.|
+|[help](#Help)| Show you a list of available commands.|
+|[claim](#claim)| Claim rewards (this command can only be ran only in the official server) 
 |[!leave](#Leave)| Leave a game, servvice anything that you have joined|
+|[!delete](#Delete)| becareful there is no take backs here !|
 
 
 
@@ -74,10 +69,16 @@ Just a common help command, hope fully you wont need to use this command often.
 #### usage: ~help <command>
 |Modes |  Description|
 |-                |-                                                      |
-|none (Default)|sends back a list of primary commands|
-|command |how to use the command + brief description + if the command is [prime](#Prime-Commands) |
+|none (Default)|Sends the user a list of primary commands|
+|command |How to use the command + brief description + if the command is [prime](#Prime-Commands) |
 
+## Claim 
+Claim rewards (this command can only be ran only in the official server). 
 
+#### usage: ~claim <mode>
+|Modes |  Description|
+|-                |-                                                      |
+|perks (Default)| Depending on the tag you have in the official server when executing this mode will activate your connection level perks |
 
 ## Leave
 This command will help you to leavethings that you are in.
@@ -86,9 +87,13 @@ This command will help you to leavethings that you are in.
 	
 |Modes |  Description|
 |-                |-                                                      |
-|game (Default)| leaves the current game that you are in, no take backs!|
+|game (Default)| Leaves the current game that you are in, no take backs!|
 
-
-
-
+## Delete
+This command can not be un done when executed and accepted! Once data has been deleted its **DELETED** .
+#### usage: ~!delete <mode>
+|Modes |  Description|
+|-                |-                                                      |
+|account| Deletes the guild Account saves to your user id after a second conformation message from the bot.|
+	
 [discordlink]: https://discord.gg/qcrVRSF
