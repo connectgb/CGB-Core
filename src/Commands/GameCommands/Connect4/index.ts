@@ -177,7 +177,6 @@ export default class Connect4 extends OnlineGames {
       );
       slotSelected = await this.listenToslotSelection(sentBoardMSG);
       attempts++;
-      // console.log(attempts);
     }
     // places the slot at the bottom
     this.GameData.gameBoard[this.dropToBottom(slotSelected)][
