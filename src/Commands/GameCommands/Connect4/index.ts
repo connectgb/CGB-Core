@@ -146,7 +146,6 @@ export default class Connect4 extends OnlineGames {
    */
   async takeTurn(playerTurn: number) {
     const currentBoard = this.drawBoard(),
-      // slotEmojis = ['0️⃣', '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣'],
       gameBoardDisplayMSG = new Discord.RichEmbed()
         .setTitle(
           `Its ${this.gameMetaData.players[playerTurn - 1].username}'s turn`
@@ -168,8 +167,8 @@ export default class Connect4 extends OnlineGames {
     const attemptLimit = 3;
     while (
       slotSelected > this.GameData.config.boardLength ||
-      slotSelected < 1 ||
-      (this.isPositionTaken(slotSelected-1) && attempts < attemptLimit)
+      slotSelected < 0 ||
+      (this.isPositionTaken(slotSelected) && attempts < attemptLimit)
     ) {
       sentBoardMSG.channel.send(
         `${this.gameMetaData.players[playerTurn - 1]} please select a slot 1-${
@@ -181,8 +180,8 @@ export default class Connect4 extends OnlineGames {
       // console.log(attempts);
     }
     // places the slot at the bottom
-    this.GameData.gameBoard[this.dropToBottom(slotSelected-1)][
-      slotSelected-1
+    this.GameData.gameBoard[this.dropToBottom(slotSelected)][
+      slotSelected
     ] = playerTurn;
 
     // check if player won?
@@ -464,7 +463,7 @@ export default class Connect4 extends OnlineGames {
 
     const selectedMSG = selectionMSGs.first();
     if (!selectedMSG) return null;
-    const slectedSlot = parseInt(selectedMSG.content, 10);
+    const slectedSlot = parseInt(selectedMSG.content, 10) -1;
     await selectedMSG.delete();
     return slectedSlot;
   }
