@@ -8,7 +8,6 @@ import {
 import { UserMD, IUserState } from '../../Models/userState';
 import { IGameMetaData, IGameMetaInfo, GameMD } from '../../Models/gameState';
 import mongoose, { Query } from 'mongoose';
-import { createSecurePair } from 'tls';
 
 //@ts-ignore
 export abstract class OnlineGames extends DiscordCommand {
@@ -185,7 +184,9 @@ export abstract class OnlineGames extends DiscordCommand {
         console.log(e);
         return null;
       });
-    await ConfirmationMSGSent.delete();
+
+    await this.deleteMessageIfCan(ConfirmationMSGSent)
+          
     await this.msg.channel.send(currentStatusMSG);
 
     return this.gameMetaData.accepted;
@@ -356,7 +357,13 @@ export abstract class OnlineGames extends DiscordCommand {
       console.log(e);
     }
   }
-
+  async deleteMessageIfCan(message: Discord.Message) {
+    if (message.guild.member(this.botClient.user.id).hasPermission('MANAGE_MESSAGES')) {
+         message.delete().catch(e => {
+       message.channel.send('Missing Manage Messages Role');  
+        })
+    }
+}
   // means that this function needs to be created in each child
   abstract GameLifeCicle(): Promise<void>;
 }

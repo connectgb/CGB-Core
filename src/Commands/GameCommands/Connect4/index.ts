@@ -463,7 +463,7 @@ export default class Connect4 extends OnlineGames {
     const selectedMSG = selectionMSGs.first();
     if (!selectedMSG) return null;
     const slectedSlot = parseInt(selectedMSG.content, 10) -1;
-    await selectedMSG.delete();
+    this.deleteMessageIfCan(selectedMSG)
     return slectedSlot;
   }
 
