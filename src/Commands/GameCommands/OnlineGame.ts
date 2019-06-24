@@ -125,13 +125,14 @@ export abstract class OnlineGames extends DiscordCommand {
       reaction: Discord.MessageReaction,
       user: Discord.GuildMember
     ) => {
-      for (let playerAllowedID in this.gameMetaData.playerIDs) {
+      for (let playerAllowedID of this.gameMetaData.playerIDs) {
         if (
-          user.id === this.gameMetaData.playerIDs[playerAllowedID] &&
+          user.id === playerAllowedID &&
           (reaction.emoji.name === acceptEmoji ||
             reaction.emoji.name === rejectEmoji)
-        )
-          return true;
+        ) {
+          return true;  
+        }
       }
       return false;
     };

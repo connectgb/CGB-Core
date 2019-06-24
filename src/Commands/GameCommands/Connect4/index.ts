@@ -98,6 +98,7 @@ export default class Connect4 extends OnlineGames {
     this.GameData.onGoing = true;
     while (this.GameData.onGoing) {
       await this.takeTurn(this.GameData.playerTurn).then(async next => {
+    // check if player won?
         switch (
           this.isVerticalWin() ||
             this.isHorizontalWin() ||
@@ -178,12 +179,13 @@ export default class Connect4 extends OnlineGames {
       slotSelected = await this.listenToslotSelection(sentBoardMSG);
       attempts++;
     }
+    if (!this.isPositionTaken(slotSelected)) {
     // places the slot at the bottom
     this.GameData.gameBoard[this.dropToBottom(slotSelected)][
       slotSelected
     ] = playerTurn;
+    }
 
-    // check if player won?
   }
   /**
    * Determine if the game is a draw (all peices on the board are filled).
