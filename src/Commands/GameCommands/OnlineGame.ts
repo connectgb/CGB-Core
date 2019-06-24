@@ -137,6 +137,7 @@ export abstract class OnlineGames extends DiscordCommand {
       }
       return userfound;
     };
+    
     // listens for all players decision to play or not
     await ConfirmationMSGSent.awaitReactions(
       filter,
