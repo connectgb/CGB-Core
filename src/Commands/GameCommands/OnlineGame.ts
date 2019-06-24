@@ -125,16 +125,17 @@ export abstract class OnlineGames extends DiscordCommand {
       reaction: Discord.MessageReaction,
       user: Discord.GuildMember
     ) => {
+       let userfound = false
       for (let playerAllowedID of this.gameMetaData.playerIDs) {
         if (
           user.id === playerAllowedID &&
           (reaction.emoji.name === acceptEmoji ||
             reaction.emoji.name === rejectEmoji)
         ) {
-          return true;  
+          userfound =  true;  
         }
       }
-      return false;
+      return userfound;
     };
     // listens for all players decision to play or not
     await ConfirmationMSGSent.awaitReactions(
