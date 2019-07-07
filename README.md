@@ -1,9 +1,9 @@
 # Online mini-games for Discord
 
 Join the discord to get a feel for the bot in action!
-[link to the discord][discordlink] this link is a temparty link there for you will be kick out of server where you disconnect. if you want to join the effort please send me a message
+[link to the discord][discordlink] this link is a temporary link there for you will be kicked out of server where you disconnect. if you want to join the effort please send me a message
 
-If you want the bot on your server go [HERE](https://www.patreon.com/ConnectGames). You will need to varify your server later on with an Api key which you can get on the website
+If you want the bot on your server go [HERE](bit.ly/CGBdiscordBots). You will need to verify your server later on with an API key which you can get on the website
 
 ## Game List
 
@@ -17,9 +17,9 @@ If you want the bot on your server go [HERE](https://www.patreon.com/ConnectGame
 |Primary Command |  Description|
 |-                |-                                                      |
 |[help](#Help)| Show you a list of available commands.|
-|[claim](#claim)| Claim rewards (this command can only be ran only in the official server) 
-|[!leave](#Leave)| Leave a game, servvice anything that you have joined|
-|[!delete](#Delete)| becareful there is no take backs here !|
+|[claim](#claim)| Claim rewards (this command can only run only in the official server) 
+|[!leave](#Leave)| Leave a game, service anything that you have joined|
+|[!delete](#Delete)| be careful there is no take backs here !|
 
 
 
@@ -35,7 +35,7 @@ If you want the bot on your server go [HERE](https://www.patreon.com/ConnectGame
    - Checks if the number of players needed for the game to start is met.
 
 #### End game:
-Both players will get experience points for playing each game till the end. The winner will get a extra gold whilst the looser will get a small fraction of that bonus! All players that took part in the game, results will be updated in the database (exp, coins, W/L ratio etc)   
+Both players will get experience points for playing each game until the end. The winner will get an extra gold whilst the loser will get a small fraction of that bonus! All players that took part in the game, results will be updated in the database (exp, coins, W/L ratio etc)   
 
 ## Prime Commands
 Really Good Quality Commands! Too good to be free sorry guys. These commands require [connection](Donators-+-Connection-Levels) levels greater than 2 to run! commands that have been marked prime:
@@ -44,28 +44,28 @@ Really Good Quality Commands! Too good to be free sorry guys. These commands req
 
 
 ## Donators + Connection Levels
-Becoming a donor allows you to increase your connection level,  more fun, unlock cool perks, bragging rights, access to new and prime commands and did i mention **"MORE FUN"** !
+Becoming a donor allows you to increase your connection level,  more fun, unlock cool perks, bragging rights, access to new and prime commands and did I mention **"MORE FUN" **!
 
 |Name (connection Level)|Price | Description| Perks |
 |-                |-   |-  |-|
-|Starter (1)|£1 or more per month | For those who just want to play more on different servers whilst helping out the community.|Create more than one account ! Any accounts created on different servers during the time you were a Patron will be kept! (Connection level * 10)|
-|Linked (2) | £5 or more per month| **Includes all the perks from Starter**. Become a Beta tester!| Get to use the latest features updates and get to use them before anyone else on the official discord  server. Get the 'Linked' title in the official discord server.|
-|Plug (3)|£12.99 or more per month|**Includes all the perks from Linked** and  **Become an Official** Get a louder voice in the community and vote on how you want things to be! | Access to all premium games and including community made functions as well. Get a say on how and what improvements should be done to make the bot better for everyone! Get the 'Plug' title in the official discord server forever! Get the chance to vote and chat in the 'nexus' lobby.|
-|Provider (4)|£19.99 or more per month|**Includes all the perks from Plug**. Your the Best! |Helping out your guild members get connected! Give them access to all premium games and including community made Commands. Get the 'Provider' title in the official discord  Limited!
+|Starter (1)|£1 or more per month | For those who just want to play more on different servers whilst helping out the community.|Create more than one account! Any accounts created on different servers during the time you were a Patron will be kept! (Connection level * 10)|
+|Linked (2) | £5 or more per month| **Includes all the perks from Starter**. Become a Beta tester!| Get to use the latest features updates and get to use them before anyone else on the official discord server. Get the 'Linked' title in the official discord server.|
+|Plug (3)|£12.99 or more per month|**Includes all the perks from Linked** and  **Become an Official** Get a louder voice in the community and vote on how you want things to be! | Access to all premium games and including community-made functions as well. Get a say on how and what improvements should be done to make the bot better for everyone! Get the 'Plug' title in the official discord server forever! Get the chance to vote and chat in the 'nexus' lobby.|
+|Provider (4)|£19.99 or more per month|**Includes all the perks from Plug**. Your the Best! |Helping out your guild members get connected! Give them access to all premium games and including community-made Commands. Get the 'Provider' title in the official discord  Limited!
 
 ## Connect4
 
 This command will allow players to verse other guild members to a game of classic connect 4.
-the objective of the game is to connect 4 of your circles in a row. whether thats in a row horizontally, vertically and diagonally! 
+the objective of the game is to connect 4 of your circles in a row. whether that's in a row horizontally, vertically and diagonally! 
 
 Number of players: 2
 
 #### usage: ~connect4 <@tag challenged play>
 
-The bot will respond with [intial Game setup](#Online-Games-Setup) then the game will be gain! Select a slot to drop your peice by sending a number between 1 - 7. 
+The bot will respond with [intial Game setup](#Online-Games-Setup) then the game will be gain! Select a slot to drop your piece by sending a number between 1 - 7. 
 
 ## Help
-Just a common help command, hope fully you wont need to use this command often.
+Just a common help command, hopefully, you won't need to use this command often.
 #### usage: ~help <command>
 |Modes |  Description|
 |-                |-                                                      |
@@ -73,7 +73,7 @@ Just a common help command, hope fully you wont need to use this command often.
 |command |How to use the command + brief description + if the command is [prime](#Prime-Commands) |
 
 ## Claim 
-Claim rewards (this command can only be ran only in the official server). 
+Claim rewards (this command can only run only in the official server). 
 
 #### usage: ~claim <mode>
 |Modes |  Description|
@@ -81,19 +81,19 @@ Claim rewards (this command can only be ran only in the official server).
 |perks (Default)| Depending on the tag you have in the official server when executing this mode will activate your connection level perks |
 
 ## Leave
-This command will help you to leavethings that you are in.
+This command will help you to leave things that you are in.
 
 #### usage: ~!leave <mode>
 	
 |Modes |  Description|
 |-                |-                                                      |
-|game (Default)| Leaves the current game that you are in, no take backs!|
+|game (Default)| Leaves the current game that you are in, no take-backs!|
 
 ## Delete
-This command can not be un done when executed and accepted! Once data has been deleted its **DELETED** .
+This command can not be undone when executed and accepted! Once data has been deleted its **DELETED **.
 #### usage: ~!delete <mode>
 |Modes |  Description|
 |-                |-                                                      |
 |account| Deletes the guild Account saves to your user id after a second conformation message from the bot.|
 	
-[discordlink]: https://discord.gg/qcrVRSF
+[discordlink]: bit.ly/CGBofficialServer
