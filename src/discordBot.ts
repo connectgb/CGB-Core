@@ -154,15 +154,15 @@ export class DiscordBotRun {
         .setAuthor(`${userDiscordInfo.tag}`)
         .setTitle('New Account?')
         .setDescription(
-          'It looks like you want to create another account on new server. You have no subscriptions to allow you to do this! Follow these solutions'
+          'It looks like you want to register an account on a new server. You dont have a subscription to allow you to do this! Follow these solutions'
         )
         .addField(
           'Upgrade Your Connection level (recommended)',
-          'Make sure you are in the official server ( http://bit.ly/CGBofficialServer ). Increase your connection levely by donating the next tier @ http://bit.ly/CGBdonate then use the ~claim perks command in the official server to activate your new perks!'
+          'Make sure you are in the official server ( http://bit.ly/CGBofficialServer ). Increase your connection level by donating towords a/next tier @ http://bit.ly/CGBdonate then use the ~claim perks command in the official server to activate your new perks!'
         )
         .addField(
           'Delete unused existing account on other servers',
-          '~!delete account - This will delete the account that the current server is using. this will allow you to free up some of your free account slots for the server your really want an account on.'
+          '~!delete account - This will delete the account that the current server is using. This will allow you to free up some of your free account slots for the servers you really want an account on.'
         )
         .setFooter(
             'For more features and exclusive bonuses become a Donater!: http://bit.ly/CGBdonate'
@@ -194,7 +194,7 @@ export class DiscordBotRun {
           .setAuthor(`${userDiscordInfo.tag}`)
           .setTitle('New Profile Created!')
           .setDescription(
-            'I see that this is you first time using the Connect Games Bot (CGB). Go to our website to learn what it can do!'
+            'I see that this is your first time using the Connect Games Bot (CGB). Go to our website to learn what it can do or type ~help!'
           )
 //          .addField('Website', '') TODO: add website link
           .addField('discordbots.org', 'http://bit.ly/CGBdiscordBots')
