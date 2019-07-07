@@ -158,7 +158,7 @@ export class DiscordBotRun {
         )
         .addField(
           'Upgrade Your Connection level (recommended)',
-          'Increase your connection levely by donating the next tier @ http://bit.ly/CGBdonate then use the ~claim perks command in the official server to activate your new perks!'
+          'Make sure you are in the official server ( http://bit.ly/CGBofficialServer ). Increase your connection levely by donating the next tier @ http://bit.ly/CGBdonate then use the ~claim perks command in the official server to activate your new perks!'
         )
         .addField(
           'Delete unused existing account on other servers',

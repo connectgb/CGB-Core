@@ -65,12 +65,18 @@ export default class ClaimPatreonRewards extends DiscordCommand {
             highestConnectionLevel < 4 ? 4 : highestConnectionLevel;
           break;
         default:
-          message.reply(
-            'You must of connect connected your patreon account with your discord'
-          );
-          break;
       }
     });
+    if (highestConnectionLevel == 0) {
+           const noDonationRoleFoundMSG = new Discord.RichEmbed()
+      .setColor('#F44336')
+      .setDescription(`${message.author}`)
+      .addField('Error:', `It looks like you dont have any connection role active`)
+      .addField('Solution:', `donate @ http://bit.ly/CGBdonate`)
+      .setFooter('If this does not work, tell a developer!');
+        message.channel.send(noDonationRoleFoundMSG)
+        return
+    }
     await UserMD.findOneAndUpdate(
       {
         userID: message.author.id,
@@ -83,7 +89,7 @@ export default class ClaimPatreonRewards extends DiscordCommand {
         '_sub.accountsLimit': 10 * highestConnectionLevel,
       }
     ).then(data =>
-      message.reply(`You Now have level ${highestConnectionLevel} connection!`)
+      message.reply(`You now have level ${highestConnectionLevel} connection and perks!`)
     );
   }
 }
