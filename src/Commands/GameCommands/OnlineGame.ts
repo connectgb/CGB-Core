@@ -121,31 +121,23 @@ export abstract class OnlineGames extends DiscordCommand {
     ]);
 
     //filter function. only players taking part in the game and one the accept and reject emojies are being captured
-    const filter = (
-      reaction: Discord.MessageReaction,
-      user: Discord.GuildMember
-    ) => {
-      for (let playerAllowedID of this.gameMetaData.playerIDs) {
-        if (
-          user.id === playerAllowedID &&
-          (reaction.emoji.name === acceptEmoji ||
-            reaction.emoji.name === rejectEmoji)
-        ) {
-          return true;  
-        }
-      }
-      return false;
-    };
+    const allowedEmo = [acceptEmoji, rejectEmoji]   
+//    this.gameMetaData.playerIDs.includes(user.id) && allowedEmo.includes(reaction.emoji.name)
+  
+    
     // listens for all players decision to play or not
     await ConfirmationMSGSent.awaitReactions(
-      filter,
+      (reaction: Discord.MessageReaction, user: Discord.GuildMember) => (allowedEmo.includes(reaction.emoji.name) && this.gameMetaData.playerIDs.includes(user.id)),
       { time: 6000 } // waits for 6ms => 6 seconds
     )
       .then(reactionResults => {
-        // console.log(reactionResults.get(acceptEmoji));
+          let filteredUsersAcp
+          let filteredUsersRej
+          if (reactionResults.get(acceptEmoji)) filteredUsersAcp = reactionResults.get(acceptEmoji).users.filter(user => this.gameMetaData.playerIDs.includes(user.id))
+          if (reactionResults.get(rejectEmoji)) filteredUsersRej = reactionResults.get(rejectEmoji).users.filter(user => this.gameMetaData.playerIDs.includes(user.id))
         if (
-          reactionResults.get(acceptEmoji) == null ||
-          reactionResults.get(acceptEmoji).count - 1 !==
+          reactionResults.get(acceptEmoji) === undefined ||
+          filteredUsersAcp.size !==
             this.metaConfig.numPlayers
         ) {
           // not everyone is ready *minus one for the bot
@@ -157,7 +149,7 @@ export abstract class OnlineGames extends DiscordCommand {
 
           if (
             reactionResults.get(rejectEmoji) &&
-            reactionResults.get(rejectEmoji).count - 1 > 0
+            filteredUsersRej.size > 0
           ) {
             // console.log(reactionResults.get(rejectEmoji).count);
             // some players rejected the game

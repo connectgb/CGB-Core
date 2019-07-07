@@ -24,7 +24,7 @@ const userSchema = new Schema({
   _sub: {
     ConnectedLevel: { type: Number, default: 0 },
     expireDate: { type: Date, default: null },
-    accountsLimit: { type: Number, default: 1 },
+    accountsLimit: { type: Number, default: 2 },
   },
   serverAccounts: { type: Map, of: userServerDataSchema },
   ingame: {
