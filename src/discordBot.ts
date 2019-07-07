@@ -5,10 +5,12 @@ import { UserMD, IUserState } from './Models/userState';
 export class DiscordBotRun {
   mainGuildData = {
     id: '566982444822036500',
+    channels: {
     patronReward: {
       channel: '588462707594887185',
       message: '589435499496603648',
-    },
+        }   
+    }
   };
   botClient: Discord.Client;
 
@@ -84,7 +86,7 @@ export class DiscordBotRun {
                   gameCommandClass.isPrime! &&
                   userData._sub.ConnectedLevel < 2
                 ) {
-                  // prime commands need connection level greater than 2
+                  //TODO: prime commands need connection level greater than 2 msg
                 } else if (gameCommandClass.execute !== undefined) {
                   new gameCommandClass.execute(
                     this.botClient,
@@ -138,8 +140,12 @@ export class DiscordBotRun {
             .setAuthor(`${userDiscordInfo.tag}`)
             .setTitle('New Account Created!')
             .setDescription(
-              'You are now part of the system. Now you have access to games on this server! Have Fun Winning!'
-            );
+              'You are now part of the system for this server. Now you have access to play games on this server! Have fun winning!'
+            )
+            .addField('Join The Official Server', 'http://bit.ly/CGBofficialServer')
+            .setFooter(
+            'For more features and exclusive bonuses become a Donater!: http://bit.ly/CGBdonate'
+          );
           discordChannel.send(newAccountMember);
         });
     } else {
@@ -148,19 +154,19 @@ export class DiscordBotRun {
         .setAuthor(`${userDiscordInfo.tag}`)
         .setTitle('New Account?')
         .setDescription(
-          'It looks like you want to create another account on another server. You have no subscriptions to allow you to do this!'
+          'It looks like you want to create another account on new server. You have no subscriptions to allow you to do this! Follow these solutions'
         )
         .addField(
-          'solution 1 (recommended)',
-          'Become a Patron: https://www.patreon.com/ConnectGames then use the ~claim perks command to activate your perks!'
+          'Upgrade Your Connection level (recommended)',
+          'Increase your connection levely by donating the next tier @ http://bit.ly/CGBdonate then use the ~claim perks command in the official server to activate your new perks!'
         )
         .addField(
-          'solution 2',
-          '~!delete account - This will delete the account that the current server is using (if any)'
+          'Delete unused existing account on other servers',
+          '~!delete account - This will delete the account that the current server is using. this will allow you to free up some of your free account slots for the server your really want an account on.'
         )
         .setFooter(
-          'For more features and exclusive bonuses become a patron!: https://www.patreon.com/ConnectGames '
-        );
+            'For more features and exclusive bonuses become a Donater!: http://bit.ly/CGBdonate'
+          );
       discordChannel.send(newAccountmemberFailedNotAPrtron);
     }
   }
@@ -186,12 +192,15 @@ export class DiscordBotRun {
         const successfulNewAccountMSG = new Discord.RichEmbed()
           .setColor('#60BE82')
           .setAuthor(`${userDiscordInfo.tag}`)
-          .setTitle('New Account Created!')
+          .setTitle('New Profile Created!')
           .setDescription(
-            'You are now part of the system. Now you have access to games on this server! Have Fun Winning!'
+            'I see that this is you first time using the Connect Games Bot (CGB). Go to our website to learn what it can do!'
           )
+//          .addField('Website', '') TODO: add website link
+          .addField('discordbots.org', 'http://bit.ly/CGBdiscordBots')
+          .addField('Join The Official Serverr', 'http://bit.ly/CGBofficialServer')
           .setFooter(
-            'For more features and exclusive bonuses become a patron!: https://www.patreon.com/ConnectGames '
+            'For more features and exclusive bonuses become a Donater!: http://bit.ly/CGBdonate'
           );
         discordChannel.send(successfulNewAccountMSG);
       })
