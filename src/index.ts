@@ -1,5 +1,5 @@
 //import { config } from "dotenv"
-require('dotenv').config()
+//require('dotenv').config()
 //config()
 import { Database } from './Database';
 import { DiscordBotRun } from './discordBot';
