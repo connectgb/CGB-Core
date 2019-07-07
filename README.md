@@ -1,9 +1,9 @@
 # Online mini-games for Discord
 
 Join the discord to get a feel for the bot in action!
-[link to the discord][discordlink] this link is a temporary link there for you will be kicked out of server where you disconnect. if you want to join the effort please send me a message
+[link to the discord][discordlink]: this link allows you to join the official server
 
-If you want the bot on your server go [HERE](bit.ly/CGBdiscordBots). You will need to verify your server later on with an API key which you can get on the website
+If you want the bot on your server go [HERE](http://bit.ly/CGBofficialServer). You will need to verify your server later on with an API key which you can get on the website
 
 ## Game List
 
@@ -38,12 +38,12 @@ If you want the bot on your server go [HERE](bit.ly/CGBdiscordBots). You will ne
 Both players will get experience points for playing each game until the end. The winner will get an extra gold whilst the loser will get a small fraction of that bonus! All players that took part in the game, results will be updated in the database (exp, coins, W/L ratio etc)   
 
 ## Prime Commands
-Really Good Quality Commands! Too good to be free sorry guys. These commands require [connection](Donators-+-Connection-Levels) levels greater than 2 to run! commands that have been marked prime:
+Really Good Quality Commands! Too good to be free sorry guys. These commands require [connection](Donators-&-Connection-Levels) levels greater than 2 to run! commands that have been marked prime:
 - Have been created by the community developers and verified by an official to be prime!
 - May require maintenance each time a user uses these commands as they could include advance systems running.
 
 
-## Donators + Connection Levels
+## Donators & Connection Levels
 Becoming a donor allows you to increase your connection level,  more fun, unlock cool perks, bragging rights, access to new and prime commands and did I mention **"MORE FUN" **!
 
 |Name (connection Level)|Price | Description| Perks |
@@ -96,4 +96,4 @@ This command can not be undone when executed and accepted! Once data has been de
 |-                |-                                                      |
 |account| Deletes the guild Account saves to your user id after a second conformation message from the bot.|
 	
-[discordlink]: bit.ly/CGBofficialServer
+[discordlink]: http://bit.ly/CGBofficialServer
