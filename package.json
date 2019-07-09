@@ -4,7 +4,7 @@
   "contributors": [
     "Gregor Christie <techattax100@gmail.com>"
   ],
-  "license": "MIT",
+  "license": "BSD 3-Clause",
   "version": "1.0.0",
   "description": "Paid Discord bot, allwos you to play chat games, trade and much more!",
   "main": "src/index.js",
@@ -14,13 +14,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/isaac-diaby/Discord_MiniGames"
+    "url": "git+https://github.com/connectgb/Discord_MiniGames"
   },
   "bugs": {
-    "url": "https://github.com/isaac-diaby/Discord_MiniGames/issues"
+    "url": "https://github.com/connectgb/Discord_MiniGames/issues"
   },
   "dependencies": {
     "discord.js": "11.5.1",
+    "dblapi.js": "2.3.0",
     "express": "4.17.1",
     "mongoose": "5.6.0",
     "dotenv": "8.0.0"
