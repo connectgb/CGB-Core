@@ -1,4 +1,7 @@
-[![Discord Bots](https://discordbots.org/api/widget/564840639817056292.svg)](https://discordbots.org/bot/564840639817056292)
+[![Discord Bots](https://discordbots.org/api/widget/status/564840639817056292.svg)](https://discordbots.org/bot/564840639817056292)[![Discord Bots](https://discordbots.org/api/widget/upvotes/564840639817056292.svg?noavatar=true)](https://discordbots.org/bot/564840639817056292)[![Discord Bots](https://discordbots.org/api/widget/servers/564840639817056292.svg?noavatar=true)](https://discordbots.org/bot/564840639817056292)
+
+
+
 
 ## Game List
 
