@@ -1,3 +1,5 @@
+[![Discord Bots](https://discordbots.org/api/widget/564840639817056292.svg)](https://discordbots.org/bot/564840639817056292)
+
 # Online mini-games for Discord
 
 Join the discord to get a feel for the bot in action!
