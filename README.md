@@ -1,12 +1,5 @@
 [![Discord Bots](https://discordbots.org/api/widget/564840639817056292.svg)](https://discordbots.org/bot/564840639817056292)
 
-# Online mini-games for Discord
-
-Join the discord to get a feel for the bot in action!
-[link to the discord][discordlink]: this link allows you to join the official server
-
-If you want the bot on your server go [HERE](http://bit.ly/CGBofficialServer). You will need to verify your server later on with an API key which you can get on the website
-
 ## Game List
 
 |Primary Command|  Description|
