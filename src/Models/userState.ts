@@ -66,7 +66,7 @@ export interface IUserState {
     expireDate: Date;
     accountsLimit: Number;
   };
-  serverAccounts: Map<string, IUserAccountState>;
+  serverAccounts: Map<string, IUserAccountState> | any;
   ingame: {
     gameID: string;
     isInGame: boolean;

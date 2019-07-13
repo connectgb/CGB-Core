@@ -5,24 +5,26 @@
     "Gregor Christie <techattax100@gmail.com>"
   ],
   "license": "BSD 3-Clause",
-  "version": "1.0.0",
+  "version": "1.1.1",
   "description": "Paid Discord bot, allwos you to play chat games, trade and much more!",
-  "main": "src/index.js",
+  "main": "src/index.ts",
+  "engines": {
+    "node": ">10"
+  },
   "scripts": {
     "start": "nodemon --watch 'src/**/*.ts' --ignore 'src/**/*.spec.ts' --exec 'ts-node' src/index.ts",
     "build": "tsc -p ."
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/connectgb/Discord_MiniGames"
+    "url": "git+https://github.com/connectgb/CGB-Core/issues"
   },
   "bugs": {
-    "url": "https://github.com/connectgb/Discord_MiniGames/issues"
+    "url": "https://github.com/connectgb/CGB-Core/issues"
   },
   "dependencies": {
     "discord.js": "11.5.1",
     "dblapi.js": "2.3.0",
-    "express": "4.17.1",
     "mongoose": "5.6.0",
     "dotenv": "8.0.0"
   },
@@ -36,8 +38,10 @@
     "typescript": "^3.4.3",
     "nodemon": "1.18.4"
   },
+  "private": true,
   "keywords": [
-    "discord bot",
-    "private"
+    "Discord Bot",
+    "Discord Games",
+    "Private"
   ]
 }

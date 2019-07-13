@@ -11,7 +11,9 @@ export class Database {
   _connect() {
     mongoose
       .connect(
-        `mongodb+srv://discorMiniAdmin:${
+        `mongodb+srv://${
+          process.env.DB_USERNAME
+        }:${
           process.env.DB_PASSWORD
         }@discordmini-36r5p.gcp.mongodb.net/${
           this.mongodbDatabase
