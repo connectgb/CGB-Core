@@ -46,39 +46,12 @@ export default class Connect4 extends OnlineGames {
     cmdArguments: Array<string>
   ) {
     super(client, message, cmdArguments);
-
-    this.GameConfirmationStage().then(start => {
+this.GameConfirmationStage().then(start => {
       if (start) {
         this.InitializeGameInDB().then(ready => {
           if (ready) {
             this.GameLifeCicle()
-              .then(async end => {
-                // console.log('Game Loot!');
-                if (this.isGameADraw()) {
-                  await this.rewardPlayer(
-                    2,
-                    this.gameMetaData.players[0].id,
-                    false
-                  );
-                  await this.rewardPlayer(
-                    2,
-                    this.gameMetaData.players[1].id,
-                    false
-                  );
-                } else {
-                  const lostIndex = this.GameData.playerTurn === 1 ? 2 : 1;
-                  await this.rewardPlayer(
-                    5,
-                    this.gameMetaData.players[this.GameData.playerTurn - 1].id,
-                    true
-                  );
-                  await this.rewardPlayer(
-                    1,
-                    this.gameMetaData.players[lostIndex - 1].id,
-                    false
-                  );
-                }
-              })
+              .then(end => this.RewardPlayers())
               .catch(e => {
                 console.log('Game Loop Error');
                 console.log(e);
@@ -94,12 +67,93 @@ export default class Connect4 extends OnlineGames {
     });
   }
   async GameLifeCicle() {
-    // console.log('Game Loop');
     this.GameData.onGoing = true;
+    const isInDm = this.args.includes('dm')
+    // console.log('Game Loop');
+    const mainGameBoardMessage: Discord.Message = await this.msg.channel.send('.').catch(e => console.log(e)) as Discord.Message
+    let playerMSGs: Array<Discord.Message> = []
+    if (isInDm) {
+        for (let player in this.gameMetaData.players) {
+             playerMSGs.push(await this.gameMetaData.players[player].send(mainGameBoardMessage.url) as Discord.Message)
+        }
+    }
+//    console.log(this.args)
     while (this.GameData.onGoing) {
-      await this.takeTurn(this.GameData.playerTurn).then(async next => {
-    // check if player won?
-        switch (
+        try {
+            
+//        @ts-ignore
+     let Flow = isInDm ? await this.takeTurn(this.GameData.playerTurn, mainGameBoardMessage, playerMSGs) : await this.takeTurn(this.GameData.playerTurn, mainGameBoardMessage)
+    
+    await this.ValidateWinner(mainGameBoardMessage).catch(e => console.log(e))
+  
+        }
+      catch(e) {mainGameBoardMessage.edit('There Was An Error In the Game Loop:' + e) }
+    }
+  }
+  /**
+   * Allows the player that is taking his/her's turn to select a slot in the grid
+   * @param playerTurn The index of the player that is taking his/her's turn
+   */
+  async takeTurn(playerTurn: number, mainGameBoardMessage: Discord.Message, playerMSGs?: Array<Discord.Message>) {
+      console.log(playerMSGs)
+    const currentBoard = this.drawBoard(),
+      gameBoardDisplayMSG = new Discord.RichEmbed()
+        .setDescription(
+          `Listening for a number 1-${this.GameData.config.boardLength+1}`
+        )
+        .setColor(playerTurn === 1 ? '#4871EA' : '#CF2907')
+        .addField('Current Board', currentBoard)
+        .addField('Player\'s Turn', `${this.gameMetaData.players[playerTurn - 1]}`)
+        .setFooter(this.gameMetaData.gameID);
+
+    await mainGameBoardMessage.edit(
+      gameBoardDisplayMSG
+    )
+    
+  if (playerMSGs){
+      let msgsUpdate = await Promise.all(
+        [
+            playerMSGs[0].edit(gameBoardDisplayMSG.addField('Main Board Url', mainGameBoardMessage.url)),
+            playerMSGs[1].edit(gameBoardDisplayMSG.addField('Main Board Url', mainGameBoardMessage.url)),
+            
+           ( this.gameMetaData.players[playerTurn - 1].send('Its Your Turn') as Promise<Discord.Message> )
+        ]
+    )
+ msgsUpdate[2].delete(3) 
+}
+        let slotSelected =  playerMSGs ? await this.listenToslotSelectionInChannel(playerMSGs[playerTurn - 1] as Discord.Message) :  await this.listenToslotSelectionInChannel(mainGameBoardMessage);
+
+        
+  
+    // validating that the selected slot is available etc
+    let attempts = 1;
+    const attemptLimit = 3;
+    while (
+      slotSelected > this.GameData.config.boardLength ||
+      slotSelected < 0 ||
+      (this.isPositionTaken(slotSelected) && attempts < attemptLimit)
+    ) {
+     let channel =  playerMSGs ? playerMSGs[playerTurn - 1] : mainGameBoardMessage;
+     
+await channel.channel.send(
+        `${this.gameMetaData.players[playerTurn - 1]} please select a slot 1-${
+          this.GameData.config.boardLength+1
+        }`
+      );
+      slotSelected = playerMSGs ? await this.listenToslotSelectionInChannel(playerMSGs[playerTurn - 1] as Discord.Message, true) :  await this.listenToslotSelectionInChannel(mainGameBoardMessage);
+      attempts++;
+    }
+    if (!this.isPositionTaken(slotSelected)) {
+    // places the slot at the bottom
+    this.GameData.gameBoard[this.dropToBottom(slotSelected)][
+      slotSelected
+    ] = playerTurn;
+    }
+
+  }
+  
+  async ValidateWinner(mainGameBoardMessage: Discord.Message) {
+      switch (
           this.isVerticalWin() ||
             this.isHorizontalWin() ||
             this.isDiagonalWin() ||
@@ -130,63 +184,43 @@ export default class Connect4 extends OnlineGames {
                   )
                   .addField('Coins adding', 5, true);
             }
-            await this.msg.channel.send(gameWinLoseDisplayMSG);
+            await mainGameBoardMessage.edit(gameWinLoseDisplayMSG);
 
             break;
           default:
             this.GameData.playerTurn = this.GameData.playerTurn === 1 ? 2 : 1;
             break;
         }
-        // console.log('switching Turn');
-      });
-    }
+      
   }
-  /**
-   * Allows the player that is taking his/her's turn to select a slot in the grid
-   * @param playerTurn The index of the player that is taking his/her's turn
-   */
-  async takeTurn(playerTurn: number) {
-    const currentBoard = this.drawBoard(),
-      gameBoardDisplayMSG = new Discord.RichEmbed()
-        .setTitle(
-          `Its ${this.gameMetaData.players[playerTurn - 1].username}'s turn`
-        )
-        .setDescription(
-          `Listening for a number 1-${this.GameData.config.boardLength+1}`
-        )
-        .setColor(playerTurn === 1 ? '#4871EA' : '#CF2907')
-        .addField('Current Board', currentBoard)
-        .setFooter(this.gameMetaData.gameID);
-
-    const sentBoardMSG: Discord.Message = (await this.msg.channel.send(
-      gameBoardDisplayMSG
-    )) as Discord.Message;
-
-    let slotSelected = await this.listenToslotSelection(sentBoardMSG);
-    // validating that the selected slot is available etc
-    let attempts = 1;
-    const attemptLimit = 3;
-    while (
-      slotSelected > this.GameData.config.boardLength ||
-      slotSelected < 0 ||
-      (this.isPositionTaken(slotSelected) && attempts < attemptLimit)
-    ) {
-      sentBoardMSG.channel.send(
-        `${this.gameMetaData.players[playerTurn - 1]} please select a slot 1-${
-          this.GameData.config.boardLength+1
-        }`
-      );
-      slotSelected = await this.listenToslotSelection(sentBoardMSG);
-      attempts++;
-    }
-    if (!this.isPositionTaken(slotSelected)) {
-    // places the slot at the bottom
-    this.GameData.gameBoard[this.dropToBottom(slotSelected)][
-      slotSelected
-    ] = playerTurn;
-    }
-
-  }
+  
+  async RewardPlayers() {
+                // console.log('Game Loot!');
+                if (this.isGameADraw()) {
+                  await this.rewardPlayer(
+                    2,
+                    this.gameMetaData.players[0].id,
+                    false
+                  );
+                  await this.rewardPlayer(
+                    2,
+                    this.gameMetaData.players[1].id,
+                    false
+                  );
+                } else {
+                  const lostIndex = this.GameData.playerTurn === 1 ? 2 : 1;
+                  await this.rewardPlayer(
+                    5,
+                    this.gameMetaData.players[this.GameData.playerTurn - 1].id,
+                    true
+                  );
+                  await this.rewardPlayer(
+                    1,
+                    this.gameMetaData.players[lostIndex - 1].id,
+                    false
+                  );
+                }
+              }
   /**
    * Determine if the game is a draw (all peices on the board are filled).
    *
@@ -436,14 +470,10 @@ export default class Connect4 extends OnlineGames {
     return this.GameData.gameBoard[y_pos][x_pos] !== 0;
   }
 
-  async listenToslotSelection(board: Discord.Message): Promise<number> {
+  async listenToslotSelectionInChannel(board: Discord.Message, inDm?: boolean): Promise<number> {
     const slotOption = ['1', '2', '3', '4', '5', '6', '7'];
     const playerTurnOnlyFilter: Discord.CollectorFilter = message => {
-      // console.log(
-      //   message.author.id ===
-      //     this.gameMetaData.playerIDs[this.GameData.playerTurn - 1] &&
-      //     slotOption.includes(message.content)
-      // );
+
       if (
         message.author.id ===
           this.gameMetaData.playerIDs[this.GameData.playerTurn - 1] &&
@@ -465,7 +495,7 @@ export default class Connect4 extends OnlineGames {
     const selectedMSG = selectionMSGs.first();
     if (!selectedMSG) return null;
     const slectedSlot = parseInt(selectedMSG.content, 10) -1;
-    this.deleteMessageIfCan(selectedMSG)
+    inDm ? null : this.deleteMessageIfCan(selectedMSG)
     return slectedSlot;
   }
 

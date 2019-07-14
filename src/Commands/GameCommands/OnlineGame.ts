@@ -351,11 +351,16 @@ export abstract class OnlineGames extends DiscordCommand {
     }
   }
   async deleteMessageIfCan(message: Discord.Message) {
+      try {
     if (message.guild.member(this.botClient.user.id).hasPermission('MANAGE_MESSAGES')) {
          message.delete().catch(e => {
        message.channel.send('Missing Manage Messages Role');  
         })
-    }
+    }     
+      }
+      catch (e) {
+          console.log(e)
+      }
 }
   // means that this function needs to be created in each child
   abstract GameLifeCicle(): Promise<void>;
