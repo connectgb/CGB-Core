@@ -114,7 +114,7 @@ this.GameConfirmationStage().then(start => {
       let msgsUpdate = await Promise.all(
         [
             playerMSGs[0].edit(gameBoardDisplayMSG.addField('Main Board Url', mainGameBoardMessage.url)),
-            playerMSGs[1].edit(gameBoardDisplayMSG.addField('Main Board Url', mainGameBoardMessage.url)),
+            playerMSGs[1].edit(gameBoardDisplayMSG.),
             
            ( this.gameMetaData.players[playerTurn - 1].send('Its Your Turn') as Promise<Discord.Message> )
         ]
