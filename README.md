@@ -101,3 +101,4 @@ This command can not be undone when executed and accepted! Once data has been de
 |account| Deletes the guild Account saves to your user id after a second conformation message from the bot.|
 	
 [discordlink]: http://bit.ly/CGBofficialServer
+
