@@ -62,8 +62,11 @@ export class DiscordBotRun {
 
   botOnlineListen() {
     this.botClient.on('message', receivedMessage => {
-      // console.log(receivedMessage);
+//       console.log(receivedMessage);
+//SupportingGuild Commands
+        if (this.getChannelType(receivedMessage) === 'dm') return;
 
+      
       if (!receivedMessage.content.startsWith(process.env.BOT_PREFIX)) {
         return;
       }
@@ -87,7 +90,7 @@ export class DiscordBotRun {
             );
             return true;
           } else if (
-            userData.serverAccounts.get(receivedMessage.guild.id) === undefined
+            receivedMessage.guild && userData.serverAccounts.get(receivedMessage.guild.id) === undefined
           ) {
             this.createNewAccount(
               userData,
@@ -154,8 +157,7 @@ export class DiscordBotRun {
   async createNewAccount(
     userData: IUserState,
     userDiscordInfo: Discord.User,
-    discordChannel:
-      | Discord.TextChannel
+    discordChannel: Discord.TextChannel
       | Discord.DMChannel
       | Discord.GroupDMChannel,
     guildID: string
@@ -220,8 +222,7 @@ export class DiscordBotRun {
 
   async createNewUserProfile(
     userDiscordInfo: Discord.User,
-    discordChannel:
-      | Discord.TextChannel
+    discordChannel: Discord.TextChannel
       | Discord.DMChannel
       | Discord.GroupDMChannel,
     guildID: string
@@ -267,5 +268,9 @@ export class DiscordBotRun {
         discordChannel.send(FailedNewUserMSG);
         console.log(e);
       });
+  }
+  getChannelType(message: Discord.Message)
+ {
+      return message.channel.type
   }
 }

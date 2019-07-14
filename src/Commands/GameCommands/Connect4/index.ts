@@ -68,39 +68,63 @@ this.GameConfirmationStage().then(start => {
   }
   async GameLifeCicle() {
     this.GameData.onGoing = true;
+    const isInDm = this.args.includes('dm')
     // console.log('Game Loop');
-    const mainGameBoardMessage:  Discord.Message = await this.msg.channel.send('.').catch(e => console.log(e)) as  Discord.Message
+    const mainGameBoardMessage: Discord.Message = await this.msg.channel.send('.').catch(e => console.log(e)) as Discord.Message
+    let playerMSGs: Array<Discord.Message> = []
+    if (isInDm) {
+        for (let player in this.gameMetaData.players) {
+             playerMSGs.push(await this.gameMetaData.players[player].send(mainGameBoardMessage.url) as Discord.Message)
+        }
+    }
 //    console.log(this.args)
     while (this.GameData.onGoing) {
-      await this.takeTurn(this.GameData.playerTurn, mainGameBoardMessage).then(async next => {
-    // check if player won?
+        try {
+            
+//        @ts-ignore
+     let Flow = isInDm ? await this.takeTurn(this.GameData.playerTurn, mainGameBoardMessage, playerMSGs) : await this.takeTurn(this.GameData.playerTurn, mainGameBoardMessage)
+    
     await this.ValidateWinner(mainGameBoardMessage).catch(e => console.log(e))
-     })
-      .catch(e => mainGameBoardMessage.edit('There Was An Error In the Game Loop:' + e) );
+  
+        }
+      catch(e) {mainGameBoardMessage.edit('There Was An Error In the Game Loop:' + e) }
     }
   }
   /**
    * Allows the player that is taking his/her's turn to select a slot in the grid
    * @param playerTurn The index of the player that is taking his/her's turn
    */
-  async takeTurn(playerTurn: number, mainGameBoardMessage: Discord.Message) {
+  async takeTurn(playerTurn: number, mainGameBoardMessage: Discord.Message, playerMSGs?: Array<Discord.Message>) {
+      console.log(playerMSGs)
     const currentBoard = this.drawBoard(),
       gameBoardDisplayMSG = new Discord.RichEmbed()
-        .setTitle(
-          `Its ${this.gameMetaData.players[playerTurn - 1].username}'s turn`
-        )
         .setDescription(
           `Listening for a number 1-${this.GameData.config.boardLength+1}`
         )
         .setColor(playerTurn === 1 ? '#4871EA' : '#CF2907')
         .addField('Current Board', currentBoard)
+        .addField('Player\'s Turn', `${this.gameMetaData.players[playerTurn - 1]}`)
         .setFooter(this.gameMetaData.gameID);
 
     await mainGameBoardMessage.edit(
       gameBoardDisplayMSG
     )
+    
+  if (playerMSGs){
+      let msgsUpdate = await Promise.all(
+        [
+            playerMSGs[0].edit(gameBoardDisplayMSG.addField('Main Board Url', mainGameBoardMessage.url)),
+            playerMSGs[1].edit(gameBoardDisplayMSG.addField('Main Board Url', mainGameBoardMessage.url)),
+            
+           ( this.gameMetaData.players[playerTurn - 1].send('Its Your Turn') as Promise<Discord.Message> )
+        ]
+    )
+ msgsUpdate[2].delete(3) 
+}
+        let slotSelected =  playerMSGs ? await this.listenToslotSelectionInChannel(playerMSGs[playerTurn - 1] as Discord.Message) :  await this.listenToslotSelectionInChannel(mainGameBoardMessage);
 
-    let slotSelected = await this.listenToslotSelection(mainGameBoardMessage);
+        
+  
     // validating that the selected slot is available etc
     let attempts = 1;
     const attemptLimit = 3;
@@ -109,12 +133,14 @@ this.GameConfirmationStage().then(start => {
       slotSelected < 0 ||
       (this.isPositionTaken(slotSelected) && attempts < attemptLimit)
     ) {
-      mainGameBoardMessage.channel.send(
+     let channel =  playerMSGs ? playerMSGs[playerTurn - 1] : mainGameBoardMessage;
+     
+await channel.channel.send(
         `${this.gameMetaData.players[playerTurn - 1]} please select a slot 1-${
           this.GameData.config.boardLength+1
         }`
       );
-      slotSelected = await this.listenToslotSelection(mainGameBoardMessage);
+      slotSelected = playerMSGs ? await this.listenToslotSelectionInChannel(playerMSGs[playerTurn - 1] as Discord.Message, true) :  await this.listenToslotSelectionInChannel(mainGameBoardMessage);
       attempts++;
     }
     if (!this.isPositionTaken(slotSelected)) {
@@ -444,14 +470,10 @@ this.GameConfirmationStage().then(start => {
     return this.GameData.gameBoard[y_pos][x_pos] !== 0;
   }
 
-  async listenToslotSelection(board: Discord.Message): Promise<number> {
+  async listenToslotSelectionInChannel(board: Discord.Message, inDm?: boolean): Promise<number> {
     const slotOption = ['1', '2', '3', '4', '5', '6', '7'];
     const playerTurnOnlyFilter: Discord.CollectorFilter = message => {
-      // console.log(
-      //   message.author.id ===
-      //     this.gameMetaData.playerIDs[this.GameData.playerTurn - 1] &&
-      //     slotOption.includes(message.content)
-      // );
+
       if (
         message.author.id ===
           this.gameMetaData.playerIDs[this.GameData.playerTurn - 1] &&
@@ -473,7 +495,7 @@ this.GameConfirmationStage().then(start => {
     const selectedMSG = selectionMSGs.first();
     if (!selectedMSG) return null;
     const slectedSlot = parseInt(selectedMSG.content, 10) -1;
-    this.deleteMessageIfCan(selectedMSG)
+    inDm ? null : this.deleteMessageIfCan(selectedMSG)
     return slectedSlot;
   }
 
