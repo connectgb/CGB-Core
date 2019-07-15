@@ -9,7 +9,7 @@
   "description": "Paid Discord bot, allwos you to play chat games, trade and much more!",
   "main": "src/index.ts",
   "engines": {
-    "node": ">=10.0.0"
+    "node": "12.x"
   },
   "scripts": {
     "start": "nodemon --watch 'src/**/*.ts' --ignore 'src/**/*.spec.ts' --exec 'ts-node' src/index.ts",
