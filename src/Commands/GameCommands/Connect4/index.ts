@@ -89,13 +89,18 @@ this.GameConfirmationStage().then(start => {
         }
       catch(e) {mainGameBoardMessage.edit('There Was An Error In the Game Loop:' + e) }
     }
+    if (isInDm) {
+        for (let player in this.gameMetaData.players) {
+             await this.gameMetaData.players[player].send(`Game Ended: ${mainGameBoardMessage.url}`) as Discord.Message
+        }
+    }
+    
   }
   /**
    * Allows the player that is taking his/her's turn to select a slot in the grid
    * @param playerTurn The index of the player that is taking his/her's turn
    */
   async takeTurn(playerTurn: number, mainGameBoardMessage: Discord.Message, playerMSGs?: Array<Discord.Message>) {
-      console.log(playerMSGs)
     const currentBoard = this.drawBoard(),
       gameBoardDisplayMSG = new Discord.RichEmbed()
         .setDescription(
@@ -115,8 +120,12 @@ this.GameConfirmationStage().then(start => {
         [
             playerMSGs[0].edit(gameBoardDisplayMSG.addField('Main Board Url', mainGameBoardMessage.url)),
             playerMSGs[1].edit(gameBoardDisplayMSG),
+<<<<<<< HEAD
             
            ( this.gameMetaData.players[playerTurn - 1].send('Its Your Turn') as Promise<Discord.Message> )
+=======
+           this.gameMetaData.players[playerTurn - 1].send('Its Your Turn') as Promise<Discord.Message>
+>>>>>>> refs/heads/dev
         ]
     )
  msgsUpdate[2].delete(3) 
