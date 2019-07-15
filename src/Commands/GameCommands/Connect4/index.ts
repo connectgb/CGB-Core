@@ -114,7 +114,7 @@ this.GameConfirmationStage().then(start => {
       let msgsUpdate = await Promise.all(
         [
             playerMSGs[0].edit(gameBoardDisplayMSG.addField('Main Board Url', mainGameBoardMessage.url)),
-            playerMSGs[1].edit(gameBoardDisplayMSG.),
+            playerMSGs[1].edit(gameBoardDisplayMSG),
             
            ( this.gameMetaData.players[playerTurn - 1].send('Its Your Turn') as Promise<Discord.Message> )
         ]
@@ -420,7 +420,7 @@ await channel.channel.send(
         if (currentValue === previousValue && currentValue !== 0) {
           tally += 1;
         } else {
-          // Reset the tally if you find a gap.
+          // Reset the tally if you find a gap. Isaac
           tally = 0;
         }
         if (tally === this.GameData.config.countToWin - 1) {

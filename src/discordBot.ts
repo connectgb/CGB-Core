@@ -7,60 +7,61 @@ import { UserMD, IUserState } from './Models/userState';
 export class DiscordBotRun {
   mainGuildData = {
     id: '566982444822036500',
-
     channels: {
-      patronReward: {
-        channel: '588462707594887185',
-        message: '589435499496603648',
+      claimedPerksLog: {
+        channel: '588462707594887185'
       },
-    },
-  };
+      dblVotesLog: {
+        channel: '600027239190495236'
+      }
+    }
+  }; 
 
-  port: number = parseInt(process.env.PORT, 10) || 5000;
+  port: number =  5000;
   botClient: Discord.Client;
-  dbl: DBLAPI;
+  dbl: any;
 
   constructor() {
     this.botClient = new Discord.Client();
     this.botClient.login(process.env.BOT_AUTHTOKEN);
-    if (process.env.PRODUCTION === 'True') {
-      this.dbl = new DBLAPI(
+    this.botClient.on('ready', () => {
+      this.botClient.user.setActivity('Discord Mini Games | ~help');
+      console.log(`${this.botClient.user.username} is online`);
+      this.botOnlineListen();
+      if (process.env.PRODUCTION === 'True') {
+          console.log('starting DBL WH')
+          this.dbl = new DBLAPI(
         process.env.DBL_WEBHOOK_TOKEN,
         {
+          statsInterval: 900000,
           webhookAuth: process.env.DBL_WEBHOOK_SECRET,
           webhookPort: this.port,
         },
         this.botClient
       );
-    }
-
-    this.botClient.on('ready', () => {
-      this.botClient.user.setActivity('Discord Mini Games | ~help ');
-      console.log(`${this.botClient.user.username} is online`);
-      if (process.env.PRODUCTION === 'True') {
+         this.dbl.webhook.on('ready', (hook: any) => {
+           console.log(
+             `Webhook running: http://${hook.hostname}:${hook.port}${hook.path}`
+           );
+         });
         this.dblOnlineListen();
-        //@ts-ignore
-        // this.dbl.webhook.on('ready', hook => {
-        //   console.log(
-        //     `Webhook running: http://${hook.hostname}:${hook.port}${hook.path}`
-        //   );
-        // });
       }
     });
-
-    this.botOnlineListen();
   }
 
-  dblOnlineListen() {
+  async dblOnlineListen() {
+    this.dbl.webhook.on('vote', (vote: any) => {
+  console.log(`User with ID ${vote.user} just voted!`);
+  });
     this.dbl.on('posted', () => {
       console.log('Server count posted!');
     });
     this.dbl.on('error', (e: any) => {
       console.log(`Oops! ${e}`);
     });
-  }
+}
 
-  botOnlineListen() {
+  async botOnlineListen() {
     this.botClient.on('message', receivedMessage => {
 //       console.log(receivedMessage);
 //SupportingGuild Commands
